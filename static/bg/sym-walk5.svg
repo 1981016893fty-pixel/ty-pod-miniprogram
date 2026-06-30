@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none">
+  <!-- Keith Haring figure with arms spread - purple -->
+  <circle cx="50" cy="18" r="12" fill="#cc22cc" stroke="#000" stroke-width="4"/>
+  <!-- torso -->
+  <path d="M40 30 Q50 27 60 30 L60 58 Q50 60 40 58 Z" fill="#cc22cc" stroke="#000" stroke-width="4" stroke-linejoin="round"/>
+  <!-- arms spread wide (T-pose walking) -->
+  <path d="M40 33 L15 28 L8 30" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M8 30 L4 28 L5 33 Z" fill="#cc22cc" stroke="#000" stroke-width="3"/>
+  <path d="M60 33 L85 28 L92 30" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M92 30 L96 28 L95 33 Z" fill="#cc22cc" stroke="#000" stroke-width="3"/>
+  <!-- legs in wide stride -->
+  <path d="M44 58 L30 80 L22 95" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M22 95 L18 98 L24 98 Z" fill="#cc22cc" stroke="#000" stroke-width="3"/>
+  <path d="M56 58 L70 80 L78 95" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M78 95 L82 98 L76 98 Z" fill="#cc22cc" stroke="#000" stroke-width="3"/>
+  <!-- motion dots -->
+  <circle cx="5" cy="50" r="2" fill="#000" opacity="0.4"/>
+  <circle cx="10" cy="55" r="1.5" fill="#000" opacity="0.3"/>
+  <circle cx="95" cy="50" r="2" fill="#000" opacity="0.4"/>
+  <circle cx="90" cy="55" r="1.5" fill="#000" opacity="0.3"/>
+</svg>

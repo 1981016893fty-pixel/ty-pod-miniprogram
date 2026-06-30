@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Keith Haring barking dog -->
+  <g fill="#00c864" stroke="#000" stroke-width="4" stroke-linejoin="round">
+    <path d="M15 50 L15 78 L30 82 L30 68 L48 68 L48 82 L82 82 L82 58 L72 48 L78 30 L65 38 L55 28 L45 33 L35 28 Z"/>
+    <circle cx="68" cy="58" r="3" fill="#000"/>
+  </g>
+</svg>

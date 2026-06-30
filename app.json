@@ -1,0 +1,11 @@
+{
+  "pages": [
+    "pages/menu/menu"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#000000",
+    "backgroundTextStyle": "light"
+  },
+  "sitemapLocation": "sitemap.json"
+}

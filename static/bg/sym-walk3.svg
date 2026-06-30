@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" fill="none">
+  <!-- Keith Haring crawling baby - orange -->
+  <!-- head -->
+  <circle cx="75" cy="22" r="12" fill="#ff8800" stroke="#000" stroke-width="4"/>
+  <!-- eye -->
+  <circle cx="79" cy="20" r="2" fill="#000"/>
+  <!-- body (crawling, horizontal) -->
+  <path d="M55 30 Q50 28 45 30 L35 40 Q33 45 38 48 L55 45 Q62 40 60 35 Z" fill="#ff8800" stroke="#000" stroke-width="4" stroke-linejoin="round"/>
+  <!-- front arm reaching -->
+  <path d="M38 45 L22 55 L18 58" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M18 58 L15 60 L18 62 Z" fill="#ff8800" stroke="#000" stroke-width="3"/>
+  <!-- back arm -->
+  <path d="M52 45 L48 58 L44 62" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M44 62 L41 64 L44 66 Z" fill="#ff8800" stroke="#000" stroke-width="3"/>
+  <!-- front knee/leg -->
+  <path d="M45 48 L35 65 L30 72" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M30 72 L27 74 L31 75 Z" fill="#ff8800" stroke="#000" stroke-width="3"/>
+  <!-- back leg -->
+  <path d="M58 45 L65 60 L68 70" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M68 70 L71 72 L67 73 Z" fill="#ff8800" stroke="#000" stroke-width="3"/>
+  <!-- radiating lines (Haring signature) -->
+  <path d="M88 8 L92 4 M92 12 L97 10 M90 18 L95 18" stroke="#000" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+</svg>

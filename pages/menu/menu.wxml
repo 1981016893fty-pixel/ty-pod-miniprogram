@@ -1,0 +1,329 @@
+<!-- TY Pod — 单页面 iPod Classic -->
+<wxs module="util">
+  function isFav(favIds, songId) {
+    if (!favIds || !favIds.length) return false
+    for (var i = 0; i < favIds.length; i++) {
+      if (favIds[i] === songId) return true
+    }
+    return false
+  }
+  module.exports = { isFav: isFav }
+</wxs>
+<view class="ipod-container">
+
+  <!-- ========== 凯斯哈林涂鸦背景层（页面级） ========== -->
+  <view class="kh-bg-layer">
+    <image wx:for="{{bgImages}}" wx:key="*this" src="{{item}}" 
+      class="kh-bg-img {{index === bgIndex ? 'active' : ''}}" mode="aspectFill" />
+  </view>
+
+  <!-- ========== iPod 机身 ========== -->
+  <view class="ipod-body theme-{{bodyColor}}">
+
+    <!-- ========== 屏幕 ========== -->
+    <view class="ipod-screen {{backlight ? '' : 'backlight-off'}}">
+      <view class="ipod-screen-inner {{currentView === 'coverflow' ? 'neon-fullscreen' : ''}}">
+
+        <!-- 霓虹色块 ③ — 琥珀色流动 -->
+        <view class="neon-blob-extra"></view>
+
+        <!-- 标题栏 -->
+        <view class="ipod-header">
+          <!-- 左：返回按钮 / TY Pod 角标 -->
+          <text class="ipod-header-back" wx:if="{{viewStack.length > 1}}" bindtap="onBack">←</text>
+          <view class="ipod-screen-badge" wx:elif="{{currentView === 'menu'}}">
+            <text class="ipod-screen-badge-text">TY Pod</text>
+          </view>
+          <view wx:else class="ipod-header-back"></view>
+          <!-- 中：标题 -->
+          <text wx:if="{{currentView !== 'coverflow'}}" class="ipod-header-title">{{viewTitle}}</text>
+          <text wx:else class="ipod-header-title"></text>
+          <!-- 右：电池 -->
+          <view class="battery-icon">
+            <view class="bar"></view><view class="bar"></view><view class="bar"></view>
+            <view class="cap"></view>
+          </view>
+        </view>
+
+        <!-- ===== 主菜单 ===== -->
+        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'menu'}}">
+          <view id="mi-0" class="ipod-menu-item {{menuIndex === 0 ? 'active' : ''}}" bindtap="onMenuTap" data-idx="0">
+            <text class="ipod-menu-item-label">在线音乐</text>
+            <text class="ipod-menu-item-arrow">›</text>
+          </view>
+          <view id="mi-1" class="ipod-menu-item {{menuIndex === 1 ? 'active' : ''}}" bindtap="onMenuTap" data-idx="1">
+            <text class="ipod-menu-item-label">CoverFlow</text>
+          </view>
+          <view id="mi-2" class="ipod-menu-item {{menuIndex === 2 ? 'active' : ''}}" bindtap="onMenuTap" data-idx="2">
+            <text class="ipod-menu-item-label">正在播放</text>
+          </view>
+          <view id="mi-3" class="ipod-menu-item {{menuIndex === 3 ? 'active' : ''}}" bindtap="onMenuTap" data-idx="3">
+            <text class="ipod-menu-item-label">本地音乐</text>
+            <text class="ipod-menu-item-arrow">›</text>
+          </view>
+          <view id="mi-4" class="ipod-menu-item {{menuIndex === 4 ? 'active' : ''}}" bindtap="onMenuTap" data-idx="4">
+            <text class="ipod-menu-item-label">设置</text>
+            <text class="ipod-menu-item-arrow">›</text>
+          </view>
+        </scroll-view>
+
+        <!-- ===== 在线音乐子菜单 ===== -->
+        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'onlinemusic'}}">
+          <view id="omi-0" class="ipod-menu-item {{subMenuIndex === 0 ? 'active' : ''}}" bindtap="onSubMenuTap" data-idx="0">
+            <text class="ipod-menu-item-label">搜索歌曲</text>
+            <text class="ipod-menu-item-arrow">›</text>
+          </view>
+          <view id="omi-1" class="ipod-menu-item {{subMenuIndex === 1 ? 'active' : ''}}" bindtap="onSubMenuTap" data-idx="1">
+            <text class="ipod-menu-item-label">热门推荐</text>
+            <text class="ipod-menu-item-arrow">›</text>
+          </view>
+        </scroll-view>
+
+        <!-- ===== 搜索 ===== -->
+        <block wx:if="{{currentView === 'search'}}">
+          <view class="ipod-search-box">
+            <input placeholder="搜索歌曲，艺人..." placeholder-style="color:rgba(42,42,53,0.55);font-size:26rpx"
+              value="{{searchKeyword}}" bindinput="onSearchInput" bindconfirm="onSearch" confirm-type="search" focus="{{true}}"/>
+            <view class="ipod-search-btn" bindtap="onSearch">搜</view>
+          </view>
+
+          <!-- 搜索结果 -->
+          <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{searchResults.length > 0}}">
+            <view id="si-{{index}}" class="ipod-search-item {{menuIndex === index ? 'wheel-highlight' : ''}}" wx:for="{{searchResults}}" wx:key="id" bindtap="onPlaySearchSong" data-idx="{{index}}">
+              <image class="search-result-cover" src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+              <view class="info">
+                <text class="name">{{item.name}}</text>
+                <text class="artist">{{item.artist}}</text>
+              </view>
+              <text class="arrow">›</text>
+              <text class="heart {{util.isFav(favIds, item.id) ? 'hearted' : ''}}" catchtap="toggleFavorite" data-idx="{{index}}">{{util.isFav(favIds, item.id) ? '♥' : '♡'}}</text>
+            </view>
+          </scroll-view>
+
+          <!-- 搜索空状态 -->
+          <view class="ipod-search-empty" wx:elif="{{searchKeyword.length === 0}}">
+            <view class="ipod-search-empty-icon"></view>
+            <text class="ipod-search-empty-text">搜索在线音乐</text>
+          </view>
+        </block>
+
+        <!-- ===== 热门推荐 ===== -->
+        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'hot'}}">
+          <view id="hi-{{index}}" class="ipod-hot-item {{menuIndex === index ? 'wheel-highlight' : ''}}" wx:for="{{playlist}}" wx:key="id" bindtap="onPlayFromList" data-idx="{{index}}">
+            <text class="hot-rank rank-{{index + 1}}">{{index + 1}}</text>
+            <image class="hot-cover" src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+            <view class="info">
+              <text class="name">{{item.name}}</text>
+              <text class="artist">{{item.artist}}</text>
+            </view>
+            <text class="arrow">›</text>
+            <text class="heart {{util.isFav(favIds, item.id) ? 'hearted' : ''}}" catchtap="toggleFavorite" data-idx="{{index}}">{{util.isFav(favIds, item.id) ? '♥' : '♡'}}</text>
+          </view>
+          <view class="ipod-search-empty" wx:if="{{playlist.length === 0}}">
+            <view class="ipod-search-empty-icon"></view>
+            <text class="ipod-search-empty-text">暂无推荐数据</text>
+            <view class="ipod-retry-btn" bindtap="onRetryPlaylist">重新加载</view>
+          </view>
+        </scroll-view>
+
+        <!-- ===== 本地音乐 ===== -->
+        <view class="ipod-local" wx:if="{{currentView === 'localmusic'}}">
+          <view class="ipod-local-import-btn" bindtap="onImportSong">
+            <text class="icon">+</text>
+            <text class="label">导入歌曲</text>
+          </view>
+          <scroll-view class="ipod-local-list" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{localSongs.length > 0}}">
+            <view id="li-{{index}}" class="ipod-local-item {{menuIndex === index ? 'wheel-highlight' : ''}}" wx:for="{{localSongs}}" wx:key="path" bindtap="onPlayLocal" data-idx="{{index}}">
+              <view class="local-file-icon">🎵</view>
+              <view class="info">
+                <text class="name">{{item.name}}</text>
+                <text class="path">{{item.artist}}</text>
+              </view>
+              <view class="delete-btn" catchtap="onDeleteLocal" data-idx="{{index}}">✕</view>
+              <text class="heart {{util.isFav(favIds, item.id) ? 'hearted' : ''}}" catchtap="toggleFavorite" data-idx="{{index}}">{{util.isFav(favIds, item.id) ? '♥' : '♡'}}</text>
+            </view>
+          </scroll-view>
+          <view class="ipod-local-empty" wx:else>
+            <text class="ipod-local-empty-text">点击上方按钮导入歌曲</text>
+            <text class="ipod-local-empty-hint">支持从聊天记录选取音频文件</text>
+          </view>
+        </view>
+
+        <!-- ===== 正在播放 ===== -->
+        <view class="ipod-player" wx:if="{{currentView === 'nowplaying'}}">
+
+          <!-- 上半区：左专辑 + 右歌词 -->
+          <view class="ipod-player-main" wx:if="{{playSong}}">
+            <!-- 左侧专辑封面 -->
+            <view class="ipod-player-left">
+              <image class="ipod-player-cover" src="{{playSong.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+              <view class="ipod-player-meta">
+                <text class="title">{{playSong.name || '未选择歌曲'}}</text>
+                <text class="artist">{{playSong.artist || ''}}</text>
+              </view>
+              <text class="heart nowplaying-heart {{util.isFav(favIds, currentSong.id) ? 'hearted' : ''}}" catchtap="toggleFavorite" data-idx="0">{{util.isFav(favIds, currentSong.id) ? '♥' : '♡'}}</text>
+            </view>
+            <!-- 右侧歌词 -->
+            <view class="ipod-player-right">
+              <view class="ipod-player-lyrics" wx:if="{{lyrics.length > 0}}">
+                <view class="line {{index === lyricActiveIdx ? 'active' : ''}}"
+                  wx:for="{{lyrics}}" wx:key="index">{{item.text}}</view>
+              </view>
+              <view class="ipod-player-lyrics" wx:else>
+                <view class="line empty">{{currentLyricText || '♪ 歌词加载中...'}}</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 无歌曲时 -->
+          <view class="ipod-player-main" wx:else>
+            <view class="ipod-player-left">
+              <view class="ipod-player-cover empty-cover">
+                <text style="font-size:40rpx;opacity:0.2;">🎵</text>
+              </view>
+              <view class="ipod-player-meta">
+                <text class="title">暂无播放</text>
+                <text class="artist">选择一首歌曲开始播放</text>
+              </view>
+            </view>
+            <view class="ipod-player-right">
+              <view class="ipod-player-lyrics">
+                <view class="line empty">未选择歌曲</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 进度条 -->
+          <view class="ipod-player-progress" wx:if="{{!loadingSong}}">
+            <view class="ipod-player-progress-bar">
+              <view class="fill" style="width:{{duration > 0 ? currentTime/duration*100 : 0}}%"></view>
+              <view class="dot" style="left:{{duration > 0 ? currentTime/duration*100 : 0}}%"></view>
+            </view>
+            <view class="ipod-player-time">
+              <text>{{currentTimeFmt}}</text>
+              <text>{{durationFmt}}</text>
+            </view>
+          </view>
+
+          <!-- 加载状态 -->
+          <view class="ipod-player-loading" wx:if="{{loadingSong}}">
+            <text class="loading-text">加载音源中...</text>
+          </view>
+
+          <!-- 控制栏 -->
+          <view class="ipod-player-controls">
+            <view class="ctrl icon" bindtap="onShuffle">
+              <view wx:if="{{playMode === 0}}" class="play-icon-repeat"></view>
+              <view wx:elif="{{playMode === 1}}" class="play-icon-shuffle"></view>
+              <view wx:else class="play-icon-repeat-one">
+                <text class="play-icon-repeat-one-label">1</text>
+              </view>
+            </view>
+            <view class="ctrl icon" bindtap="onPrev">
+              <view class="play-icon-prev"></view>
+            </view>
+            <view class="ctrl play-btn" bindtap="onTogglePlay">
+              <view wx:if="{{!playing}}" class="play-icon-play"></view>
+              <view wx:else class="play-icon-pause"></view>
+            </view>
+            <view class="ctrl icon" bindtap="onNext">
+              <view class="play-icon-next"></view>
+            </view>
+            <view class="ctrl icon" bindtap="onVolume">
+              <view class="play-icon-volume"></view>
+            </view>
+          </view>
+
+        </view>
+
+        <block wx:if="{{currentView === 'coverflow'}}">
+          <!-- 霓虹色块流动动效 -->
+          <view class="neon-blob neon-blob-1"></view>
+          <view class="neon-blob neon-blob-2"></view>
+          <view class="neon-blob neon-blob-3"></view>
+          <view class="neon-blob neon-blob-4"></view>
+          <view class="neon-blob neon-blob-5"></view>
+          <view class="neon-blob neon-blob-6"></view>
+          <view class="ipod-coverflow" wx:if="{{coverFlowData.length > 0}}"
+            catchtouchstart="onCFTouchStart" catchtouchmove="onCFTouchMove" catchtouchend="onCFTouchEnd">
+            <view class="ipod-coverflow-track">
+              <view class="ipod-coverflow-item {{idx === cfActiveIdx ? 'active' : ''}}"
+                wx:for="{{coverFlowData}}" wx:key="id" wx:for-index="idx"
+                style="left: {{(idx - cfActiveIdx) * 120 + 215}}rpx; transform: perspective(800rpx) rotateY({{(idx - cfActiveIdx) * 22}}deg) scale({{idx === cfActiveIdx ? 1 : (idx === cfActiveIdx - 1 || idx === cfActiveIdx + 1 ? 0.88 : 0.72)}}); transform-origin: {{idx < cfActiveIdx ? '100% center' : (idx > cfActiveIdx ? '0% center' : 'center center')}}; z-index: {{idx === cfActiveIdx ? 100 : (idx === cfActiveIdx - 1 || idx === cfActiveIdx + 1 ? 60 : (idx === cfActiveIdx - 2 || idx === cfActiveIdx + 2 ? 35 : 10))}}; opacity: {{(idx >= cfActiveIdx - 3 && idx <= cfActiveIdx + 3) ? 1 : 0.08}};"
+                bindtap="onCFTap" data-idx="{{idx}}">
+                <!-- 封面 -->
+                <view class="ipod-coverflow-cover">
+                  <image src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+                </view>
+                <!-- 镜像倒影 -->
+                <view class="ipod-coverflow-reflection">
+                  <image src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+                  <view class="ipod-coverflow-reflection-mask"></view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="ipod-coverflow-label" wx:if="{{coverFlowData[cfActiveIdx]}}">
+            <text class="title">{{coverFlowData[cfActiveIdx].name}}</text>
+            <text class="artist">{{coverFlowData[cfActiveIdx].artist}}</text>
+          </view>
+          <view class="ipod-search-empty" wx:if="{{coverFlowData.length === 0}}">
+            <view class="ipod-search-empty-icon"></view>
+            <text class="ipod-search-empty-text">暂无封面数据</text>
+            <view class="ipod-retry-btn" bindtap="onRetryPlaylist">重新加载</view>
+          </view>
+        </block>
+
+        <!-- ===== 设置 ===== -->
+        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'settings'}}">
+          <view id="seti-0" class="ipod-setting-item {{settingsIndex === 0 ? 'active' : ''}}" bindtap="onPlayModeSwitch">
+            <text class="label">播放模式</text>
+            <text class="value">{{playModeLabel}}</text>
+          </view>
+          <view id="seti-1" class="ipod-setting-item {{settingsIndex === 1 ? 'active' : ''}}" bindtap="onToggleBacklight">
+            <text class="label">背光</text>
+            <text class="value">{{backlight ? '开' : '关'}}</text>
+          </view>
+          <view id="seti-2" class="ipod-setting-item {{settingsIndex === 2 ? 'active' : ''}}" bindtap="onAbout">
+            <text class="label">关于</text>
+          </view>
+        </scroll-view>
+
+        <!-- 底部 "正在播放" 指示 -->
+        <view class="ipod-nowplaying-bar" wx:if="{{currentView !== 'nowplaying' && currentSong && currentSong.name}}">
+          <view class="icon-play"></view>
+          <text class="info">{{currentSong.name}} — {{currentSong.artist}}</text>
+        </view>
+
+      </view><!-- ipod-screen-inner -->
+    </view><!-- ipod-screen -->
+
+    <!-- ========== 滚轮 ========== -->
+    <view class="ipod-wheel-wrap"
+      bindtouchstart="onWheelTouchStart"
+      bindtouchmove="onWheelTouchMove"
+      bindtouchend="onWheelTouchEnd">
+      <view class="ipod-wheel">
+        <view class="ipod-wheel-ring"></view>
+        <view class="ipod-wheel-center" catchtap="onWheelCenter"></view>
+        <text class="ipod-wheel-btn top"    catchtap="onWheelMenuTap">MENU</text>
+        <text class="ipod-wheel-btn left"   catchtap="onWheelPrevTap">⏮</text>
+        <text class="ipod-wheel-btn right"  catchtap="onWheelNextTap">⏭</text>
+        <text class="ipod-wheel-btn bottom" catchtap="onWheelPlayTap">▶⏸</text>
+      </view>
+    </view>
+
+  </view><!-- ipod-body -->
+
+  <!-- ========== 主题切换器 — 7色金属质感 ========== -->
+  <view class="theme-switcher" wx:if="{{currentView === 'menu'}}">
+    <view class="theme-dot silver {{bodyColor === 'silver' ? 'active' : ''}}" bindtap="onColorChange" data-color="silver"></view>
+    <view class="theme-dot black {{bodyColor === 'black' ? 'active' : ''}}" bindtap="onColorChange" data-color="black"></view>
+    <view class="theme-dot orange {{bodyColor === 'orange' ? 'active' : ''}}" bindtap="onColorChange" data-color="orange"></view>
+    <view class="theme-dot cobalt {{bodyColor === 'cobalt' ? 'active' : ''}}" bindtap="onColorChange" data-color="cobalt"></view>
+    <view class="theme-dot taro {{bodyColor === 'taro' ? 'active' : ''}}" bindtap="onColorChange" data-color="taro"></view>
+    <view class="theme-dot pink {{bodyColor === 'pink' ? 'active' : ''}}" bindtap="onColorChange" data-color="pink"></view>
+    <view class="theme-dot citrus {{bodyColor === 'citrus' ? 'active' : ''}}" bindtap="onColorChange" data-color="citrus"></view>
+  </view>
+
+</view><!-- ipod-container -->

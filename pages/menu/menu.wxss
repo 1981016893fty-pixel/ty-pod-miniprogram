@@ -1,0 +1,234 @@
+/* ============================================
+   TY Pod — 页面专用样式
+   浅色液态玻璃 · 淡雅霓虹
+   ============================================ */
+
+/* ---------- 屏幕背光关闭 ---------- */
+.ipod-screen.backlight-off {
+  opacity: 0.18;
+  transition: opacity 0.3s;
+}
+
+/* ---------- 搜索结果封面 ---------- */
+.ipod-search-item .search-result-cover {
+  width: 74rpx;
+  height: 74rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.08);
+  box-shadow:
+    inset 0 1rpx 0.5rpx rgba(255,255,255,0.30),
+    inset 0 -0.5rpx 1rpx rgba(20,10,40,0.05),
+    0 0 0 0.5rpx rgba(255,255,255,0.12);
+}
+
+/* ---------- 热门推荐封面 ---------- */
+.ipod-hot-item .hot-cover {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.08);
+  box-shadow:
+    inset 0 1rpx 0.5rpx rgba(255,255,255,0.30),
+    inset 0 -0.5rpx 1rpx rgba(20,10,40,0.05),
+    0 0 0 0.5rpx rgba(255,255,255,0.12);
+}
+
+/* ---------- 热门排名数字 ---------- */
+.ipod-hot-item .hot-rank {
+  width: 38rpx;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+  flex-shrink: 0;
+}
+.ipod-hot-item .hot-rank.rank-1 { color: #d06898; }
+.ipod-hot-item .hot-rank.rank-2 { color: rgba(255,255,255,0.78); }
+.ipod-hot-item .hot-rank.rank-3 { color: rgba(255,255,255,0.72); }
+
+/* ---------- 播放器空封面 ---------- */
+.ipod-player-cover.empty-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.10);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ---------- CoverFlow 3D ---------- */
+
+.ipod-coverflow-label {
+  text-align: center;
+  padding: 10rpx 0;
+}
+
+/* ---------- 本地音乐 ---------- */
+.ipod-local {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* 导入按钮 — 液态玻璃 */
+.ipod-local-import-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  padding: 16rpx;
+  margin: 8rpx 0;
+  background: linear-gradient(135deg, rgba(178,140,248,0.90) 0%, rgba(255,108,172,0.78) 100%);
+  backdrop-filter: blur(8px) saturate(1.6);
+  -webkit-backdrop-filter: blur(8px) saturate(1.6);
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.45),
+    inset 0 -1rpx 1rpx rgba(20,10,40,0.10),
+    0 0 14rpx rgba(178,140,248,0.20);
+}
+.ipod-local-import-btn:active { opacity: 0.8; }
+.ipod-local-import-btn .icon {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  border: 2rpx solid rgba(255,255,255,0.50);
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.ipod-local-import-btn .label {
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+.ipod-local-list {
+  flex: 1;
+  overflow-y: auto;
+}
+.ipod-local-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 8rpx;
+  gap: 10rpx;
+  border-bottom: 0.5rpx solid rgba(255,255,255,0.12);
+}
+/* 本地歌曲选中 */
+.ipod-local-item:active {
+  background: rgba(255,255,255,0.10);
+  border-radius: 10rpx;
+  box-shadow: inset 0 1rpx 0.5rpx rgba(255,255,255,0.25);
+}
+.ipod-local-item .local-file-icon {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 10rpx;
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  flex-shrink: 0;
+  box-shadow:
+    inset 0 1rpx 0.5rpx rgba(255,255,255,0.25),
+    inset 0 -0.5rpx 1rpx rgba(20,10,40,0.04);
+}
+.ipod-local-item .info {
+  flex: 1;
+  overflow: hidden;
+}
+.ipod-local-item .name {
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ipod-local-item .path {
+  color: rgba(255,255,255,0.55);
+  font-size: 18rpx;
+  margin-top: 3rpx;
+}
+.ipod-local-item .delete-btn {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  color: rgba(224,136,176,0.60);
+  font-size: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow:
+    inset 0 1rpx 0.5rpx rgba(255,255,255,0.25),
+    inset 0 -0.5rpx 1rpx rgba(20,10,40,0.04);
+}
+.ipod-local-item .delete-btn:active {
+  background: rgba(224,136,176,0.12);
+  color: #d06898;
+}
+.ipod-local-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+}
+.ipod-local-empty-text {
+  color: rgba(255,255,255,0.45);
+  font-size: 24rpx;
+}
+.ipod-local-empty-hint {
+  color: rgba(255,255,255,0.35);
+  font-size: 20rpx;
+}
+
+/* ---------- 通用列表 press 反馈 — 玻璃压感 ---------- */
+.ipod-menu-item:active,
+.ipod-setting-item:active,
+.ipod-hot-item:active,
+.ipod-search-item:active {
+  background: rgba(255,255,255,0.10);
+  border-radius: 10rpx;
+  box-shadow: inset 0 1rpx 0.5rpx rgba(255,255,255,0.30);
+}
+
+/* ---------- 滚轮按钮可点击 ---------- */
+.ipod-wheel-btn {
+  pointer-events: auto !important;
+}
+.ipod-wheel-btn:active {
+  opacity: 0.5;
+}
+
+/* ---------- 重试按钮 — 液态玻璃 ---------- */
+.ipod-retry-btn {
+  margin-top: 16rpx;
+  padding: 10rpx 36rpx;
+  background: linear-gradient(135deg, rgba(178,140,248,0.90) 0%, rgba(255,108,172,0.78) 100%);
+  backdrop-filter: blur(8px) saturate(1.6);
+  -webkit-backdrop-filter: blur(8px) saturate(1.6);
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: 600;
+  border-radius: 20rpx;
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.45),
+    inset 0 -1rpx 1rpx rgba(20,10,40,0.10),
+    0 0 12rpx rgba(178,140,248,0.18);
+}
+.ipod-retry-btn:active {
+  opacity: 0.8;
+}

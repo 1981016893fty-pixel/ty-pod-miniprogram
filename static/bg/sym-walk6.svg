@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" fill="none">
+  <!-- Keith Haring trotting dog - yellow -->
+  <!-- body -->
+  <path d="M28 48 Q50 38 72 42 L82 52 Q78 64 62 66 L38 64 Q26 60 28 48 Z" fill="#ffcc00" stroke="#000" stroke-width="4" stroke-linejoin="round"/>
+  <!-- head -->
+  <ellipse cx="80" cy="38" rx="14" ry="12" fill="#ffcc00" stroke="#000" stroke-width="4"/>
+  <!-- ear floppy -->
+  <path d="M78 26 L72 16 L82 22 Z" fill="#ffcc00" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+  <!-- eye -->
+  <circle cx="84" cy="36" r="2.5" fill="#000"/>
+  <!-- open mouth (barking) -->
+  <path d="M90 42 L98 40 L96 48 Z" fill="#ffcc00" stroke="#000" stroke-width="3"/>
+  <!-- tail up curly -->
+  <path d="M28 48 L12 30 L18 18 L14 15" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M14 15 L18 12 L10 14 Z" fill="#ffcc00" stroke="#000" stroke-width="3"/>
+  <!-- front legs (trot) -->
+  <path d="M65 64 L72 82 L76 92" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M76 92 L79 95 L72 95 Z" fill="#ffcc00" stroke="#000" stroke-width="3"/>
+  <path d="M55 64 L48 80 L44 90" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M44 90 L41 93 L48 93 Z" fill="#ffcc00" stroke="#000" stroke-width="3"/>
+  <!-- back legs -->
+  <path d="M38 64 L30 80 L26 92" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M26 92 L23 95 L30 95 Z" fill="#ffcc00" stroke="#000" stroke-width="3"/>
+  <path d="M48 64 L55 78 L59 88" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M59 88 L62 91 L55 91 Z" fill="#ffcc00" stroke="#000" stroke-width="3"/>
+  <!-- sound waves -->
+  <path d="M102 30 Q108 28 110 32 M104 36 Q110 35 112 39" stroke="#000" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.5"/>
+</svg>

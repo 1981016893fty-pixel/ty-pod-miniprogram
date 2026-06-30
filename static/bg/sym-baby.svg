@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Keith Haring radiant baby -->
+  <g fill="none" stroke="#ff7800" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="50" cy="50" r="18" fill="#ff7800"/>
+    <line x1="50" y1="15" x2="50" y2="25"/>
+    <line x1="50" y1="75" x2="50" y2="85"/>
+    <line x1="15" y1="50" x2="25" y2="50"/>
+    <line x1="75" y1="50" x2="85" y2="50"/>
+    <line x1="22" y1="22" x2="30" y2="30"/>
+    <line x1="70" y1="30" x2="78" y2="22"/>
+    <line x1="22" y1="78" x2="30" y2="70"/>
+    <line x1="70" y1="70" x2="78" y2="78"/>
+  </g>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120">
+  <!-- Keith Haring dancing figure -->
+  <g fill="none" stroke="#ff1e50" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="50" cy="15" r="10" fill="#ff1e50"/>
+    <line x1="50" y1="25" x2="50" y2="65"/>
+    <line x1="50" y1="35" x2="25" y2="50"/>
+    <line x1="50" y1="35" x2="75" y2="45"/>
+    <line x1="50" y1="65" x2="30" y2="100"/>
+    <line x1="50" y1="65" x2="72" y2="95"/>
+  </g>
+</svg>

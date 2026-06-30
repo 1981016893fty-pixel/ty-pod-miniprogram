@@ -1,0 +1,2034 @@
+/* ============================================
+   TY Pod — 全局样式
+   外壳：经典 iPod Classic 银白铝合金
+   屏幕内：iOS 26 液态玻璃 · 浅霓虹色（淡雅）
+   ============================================ */
+
+/* ---------- 基础重置 ---------- */
+page {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+  /* 深色背景 — 让金属机身极致浮出 */
+  background: linear-gradient(155deg, #1e2028 0%, #2a2d36 25%, #343840 50%, #262932 75%, #1a1c24 100%);
+}
+
+/* ===========================================
+   主容器 — 居中显示
+   =========================================== */
+.ipod-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===========================================
+   iPod 机身 — 极限 3D 立体金属
+   抛光电镀铝合金：极端高对比弧面 + 物理厚度挤出 + 双层光源
+   =========================================== */
+.ipod-body {
+  position: relative;
+  z-index: 2;
+  width: 88%;
+  height: 0;
+  padding-bottom: 120%;
+  border-radius: 64rpx;
+  overflow: hidden;
+  box-sizing: border-box;
+  /* ═══ Mac 水滴形边缘 — 液态玻璃折射 + 表面张力凸起 ═══ */
+  box-shadow:
+    /* — 柔和悬浮投影 — */
+    0 30rpx 80rpx rgba(0,0,0,0.40),
+    0 12rpx 30rpx rgba(0,0,0,0.25),
+    /* ═══ 水滴顶部高光弧 — 几乎无 ═══ */
+    inset 0 10rpx 8rpx -2rpx rgba(255,255,255,0.04),
+    inset 0 6rpx 4rpx -1rpx rgba(255,255,255,0.02),
+    inset 0 3rpx 2rpx rgba(255,255,255,0.01),
+    /* 顶边外缘 — 细折射线 */
+    inset 0 1rpx 0 rgba(255,255,255,0.06),
+    /* 底边 — 水滴底部柔和暗面 */
+    inset 0 -8rpx 6rpx -2rpx rgba(0,0,0,0.30),
+    inset 0 -5rpx 3rpx -1rpx rgba(0,0,0,0.20),
+    inset 0 -2rpx 1rpx rgba(0,0,0,0.12),
+    /* 底边外缘 — 水滴底部接触暗线 */
+    inset 0 -1rpx 0 rgba(0,0,0,0.15),
+    /* 左侧 — 水滴左侧弧面柔和过渡 */
+    inset 8rpx 0 10rpx -3rpx rgba(0,0,0,0.18),
+    inset 4rpx 0 6rpx -2rpx rgba(0,0,0,0.10),
+    inset 2rpx 0 2rpx rgba(255,255,255,0.10),
+    /* 右侧 — 水滴右侧弧面反光 */
+    inset -8rpx 0 10rpx -3rpx rgba(255,255,255,0.14),
+    inset -4rpx 0 6rpx -2rpx rgba(255,255,255,0.08),
+    inset -2rpx 0 2rpx rgba(255,255,255,0.06);
+}
+
+/* ═══ 水滴顶部液态光泽弧 — 模拟水滴表面张力捕获光线 ═══ */
+.ipod-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 64rpx;
+  pointer-events: none;
+  background:
+    /* ① 顶部水滴光泽 — 几乎无 */
+    linear-gradient(180deg,
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.02) 3%,
+      transparent 7%,
+      transparent 14%,
+      transparent 24%,
+      transparent 72%,
+      rgba(0,0,0,0.08) 86%,
+      rgba(0,0,0,0.16) 96%,
+      rgba(0,0,0,0.22) 100%),
+    /* ② 底部环境光反弹 — 极弱 */
+    linear-gradient(0deg,
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.02) 5%,
+      transparent 15%);
+}
+
+/* ═══ 水滴左侧折射光弧 + 边缘液体光泽 ═══ */
+.ipod-body::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 64rpx;
+  background:
+    /* 左侧水滴弧面折射 — 几乎无 */
+    linear-gradient(95deg,
+      rgba(255,255,255,0.02) 0%,
+      transparent 3%,
+      transparent 10%,
+      transparent 20%);
+}
+
+/* ═══ 机身金属弧面色 — 7色金属质感渐变 ═══ */
+.ipod-body.theme-silver {
+  background: linear-gradient(140deg,
+    #ffffff 0%, #fafbfe 2%, #f3f5fa 5%,
+    #e6e9f0 10%, #d5d9e2 16%,
+    #c3c7d2 24%, #b1b6c2 33%,
+    #a2a7b4 43%, #949aa7 53%,
+    #898f9c 61%, #7f8592 69%,
+    #767c89 78%, #6e7481 87%,
+    #696f7c 94%, #656b78 100%);
+}
+.ipod-body.theme-black {
+  background: linear-gradient(140deg,
+    #6a6a70 0%, #5e5e64 2%, #525258 5%,
+    #46464c 10%, #3a3a40 16%,
+    #2e2e34 24%, #252528 33%,
+    #1e1e22 43%, #18181c 53%,
+    #141416 61%, #101012 69%,
+    #0c0c0e 78%, #08080a 87%,
+    #050506 94%, #030304 100%);
+}
+.ipod-body.theme-orange {
+  background: linear-gradient(140deg,
+    #ffd0a0 0%, #ffc080 2%, #ffb060 5%,
+    #ff9840 10%, #f88820 16%,
+    #e87810 24%, #d86808 33%,
+    #c85806 43%, #b84805 53%,
+    #a03804 61%, #882c03 69%,
+    #702403 78%, #581c02 87%,
+    #401402 94%, #2c0e01 100%);
+}
+.ipod-body.theme-cobalt {
+  background: linear-gradient(140deg,
+    #a8d0ff 0%, #88c0ff 2%, #68b0f8 5%,
+    #48a0f0 10%, #2890e8 16%,
+    #0080e0 24%, #0070d8 33%,
+    #0060c8 43%, #0050b8 53%,
+    #0040a8 61%, #003898 69%,
+    #002c80 78%, #002068 87%,
+    #001850 94%, #001038 100%);
+}
+.ipod-body.theme-taro {
+  background: linear-gradient(140deg,
+    #e8dcf8 0%, #dcc8f0 2%, #c8b0e8 5%,
+    #b89ce0 10%, #a888d8 16%,
+    #9878d0 24%, #8868c8 33%,
+    #7858c0 43%, #6848b8 53%,
+    #5838a8 61%, #483098 69%,
+    #382880 78%, #2c2068 87%,
+    #201850 94%, #140c38 100%);
+}
+.ipod-body.theme-pink {
+  background: linear-gradient(140deg,
+    #fff0f5 0%, #ffe0ec 2%, #ffd0e0 5%,
+    #ffc0d4 10%, #ffb0c8 16%,
+    #ffa0bc 24%, #f090b0 33%,
+    #e080a4 43%, #d07098 53%,
+    #c0608c 61%, #b05080 69%,
+    #984870 78%, #803c60 87%,
+    #683050 94%, #502440 100%);
+}
+.ipod-body.theme-citrus {
+  background: linear-gradient(140deg,
+    #fff8c8 0%, #fff0a8 2%, #ffe888 5%,
+    #ffe068 10%, #ffd848 16%,
+    #f0d020 24%, #e0c010 33%,
+    #c8b008 43%, #b0a006 53%,
+    #989004 61%, #807803 69%,
+    #686802 78%, #505001 87%,
+    #3c3c01 94%, #2a2a00 100%);
+}
+
+/* ===========================================
+   屏幕 — 浅色液态玻璃（浓郁霓虹渐变）
+   =========================================== */
+.ipod-screen {
+  position: absolute;
+  top: 5.5%;
+  left: 7%;
+  right: 7%;
+  height: 43%;
+  z-index: 2;
+  /* — 液态玻璃基底：三色霓虹交融（⭐ 底层密度提升，供 backdrop-filter 模糊用）— */
+  background:
+    /* ① 大范围紫色光晕 */
+    radial-gradient(ellipse 88% 82% at 22% 18%, rgba(178,140,248,0.48) 0%, rgba(160,108,232,0.30) 18%, rgba(145,95,220,0.14) 44%, transparent 66%),
+    /* ② 大范围粉色光晕 */
+    radial-gradient(ellipse 82% 78% at 74% 74%, rgba(255,108,172,0.42) 0%, rgba(240,88,158,0.28) 20%, rgba(228,78,148,0.12) 48%, transparent 70%),
+    /* ③ 蓝色光晕 */
+    radial-gradient(ellipse 68% 62% at 48% 42%, rgba(88,200,245,0.30) 0%, rgba(72,185,230,0.16) 33%, rgba(58,170,218,0.07) 58%, transparent 78%),
+    /* ④ 全屏紫粉渐变基底 */
+    radial-gradient(ellipse 100% 90% at 50% 50%, rgba(178,140,248,0.17) 0%, rgba(255,108,172,0.11) 38%, rgba(88,200,245,0.09) 68%, transparent 100%),
+    /* ⑤ 液态玻璃乳白底色 */
+    linear-gradient(170deg,
+      #f4f0fd 0%, #f1ecfa 6%, #efe9f7 14%,
+      #ede7f5 24%, #ece6f4 38%, #eee8f6 52%,
+      #f0eaf8 64%, #f1ecfa 76%, #f3effc 90%, #f4f0fd 100%);
+  border-radius: 10rpx;
+  overflow: hidden;
+  /* — 厚玻璃边缘：融合霓虹色散，无硬边框 — */
+  box-shadow:
+    inset 0 2rpx 1rpx rgba(255,255,255,0.60),
+    inset 0 -3rpx 2rpx rgba(20,10,40,0.08),
+    inset 2rpx 0 1rpx rgba(255,255,255,0.30),
+    inset -2rpx 0 1rpx rgba(20,10,40,0.04),
+    inset 0 0 32rpx rgba(178,140,248,0.18),
+    inset 0 0 24rpx rgba(255,108,172,0.10),
+    inset 0 0 16rpx rgba(88,200,245,0.08),
+    0 0 20rpx rgba(178,140,248,0.22),
+    0 0 40rpx rgba(178,140,248,0.10),
+    0 0 60rpx rgba(255,108,172,0.06);
+}
+
+/* ===========================================
+   凯斯哈林涂鸦背景层（页面级 — 在 iPod 机身后面）
+   =========================================== */
+.kh-bg-layer {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.kh-bg-img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(1.05);
+  filter: blur(20px);
+  transition:
+    opacity 3s ease-in-out,
+    filter 3s ease-in-out,
+    transform 3s ease-in-out;
+}
+.kh-bg-img.active {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
+
+/* 屏幕表面 — 液态玻璃镜面反射（静态） */
+.ipod-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 10rpx;
+  background:
+    /* ① 底部液态三色融合反射 */
+    radial-gradient(ellipse 75% 24% at 48% 94%, rgba(178,140,248,0.22) 0%, rgba(200,130,220,0.15) 20%, rgba(230,118,190,0.11) 45%, rgba(88,200,245,0.08) 68%, transparent 88%),
+    /* ② 右侧柔和高光 */
+    radial-gradient(ellipse 18% 52% at 93% 48%, rgba(255,255,255,0.14) 0%, transparent 68%);
+}
+
+/* 屏幕边缘 — 液态玻璃色散折射（⭐ 实时呼吸动画）*/
+.ipod-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 10rpx;
+  will-change: opacity;
+  animation: edgeBreathe 7s ease-in-out infinite;
+  background:
+    /* ① 顶部亮线 — 减弱，避免标题栏区域过亮 */
+    linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 1.5%, transparent 4%),
+    /* ② 底部暗线 */
+    linear-gradient(0deg, rgba(20,10,40,0.12) 0%, rgba(20,10,40,0.04) 1.5%, transparent 4%),
+    /* ③ 左边色散 — 青→紫渐变 */
+    linear-gradient(90deg, rgba(88,200,245,0.34) 0%, rgba(88,200,245,0.16) 2%, rgba(178,140,248,0.08) 5%, transparent 10%),
+    /* ④ 右边色散 — 品红→紫渐变 */
+    linear-gradient(270deg, rgba(255,108,172,0.34) 0%, rgba(255,108,172,0.16) 2%, rgba(178,140,248,0.08) 5%, transparent 10%),
+    /* ⑤ 四角融合色散 — 两两交融 */
+    radial-gradient(ellipse 16% 14% at 0% 0%, rgba(88,200,245,0.42) 0%, rgba(140,165,240,0.20) 35%, rgba(178,140,248,0.08) 55%, transparent 72%),
+    radial-gradient(ellipse 16% 14% at 100% 0%, rgba(178,140,248,0.28) 0%, rgba(210,120,205,0.18) 38%, rgba(255,108,172,0.08) 55%, transparent 72%),
+    radial-gradient(ellipse 16% 14% at 0% 100%, rgba(178,140,248,0.38) 0%, rgba(140,165,240,0.18) 38%, rgba(88,200,245,0.08) 55%, transparent 72%),
+    radial-gradient(ellipse 16% 14% at 100% 100%, rgba(255,108,172,0.40) 0%, rgba(210,120,205,0.20) 38%, rgba(178,140,248,0.08) 55%, transparent 72%);
+}
+
+/* 屏幕内容层 — 真实磨砂玻璃覆盖（backdrop-filter 真模糊）*/
+.ipod-screen-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 12rpx 16rpx;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+  /* ⭐ 移除 overflow:hidden — 不再裁剪流动光晕伪元素 */
+  /* ⭐ 核心：增强液态玻璃 — 更模糊 + 微对比度增强厚度感 */
+  backdrop-filter: blur(14px) saturate(1.8) contrast(1.04) brightness(1.04);
+  -webkit-backdrop-filter: blur(14px) saturate(1.8) contrast(1.04) brightness(1.04);
+  /* 玻璃微乳白 tint + 内层深度光晕 — 顶部不加白，保持全屏均匀 */
+  background:
+    radial-gradient(ellipse 85% 65% at 50% 50%, rgba(178,140,248,0.08) 0%, transparent 70%);
+  /* 玻璃内边高光 + 微厚度阴影 */
+  box-shadow:
+    inset 0 1rpx 0 rgba(255,255,255,0.28),
+    inset 0 -1rpx 2rpx rgba(20,10,40,0.04);
+}
+
+/* ═══ 屏幕底色渐变 — 跟随机身颜色（替换紫/粉/蓝三色光晕为对应色） ═══ */
+/* silver 保持原始紫粉蓝，不覆盖 */
+
+.ipod-body.theme-black .ipod-screen {
+  background:
+    radial-gradient(ellipse 88% 82% at 22% 18%, rgba(70,70,90,0.48) 0%, rgba(50,50,70,0.30) 18%, rgba(40,40,60,0.14) 44%, transparent 66%),
+    radial-gradient(ellipse 82% 78% at 74% 74%, rgba(90,90,110,0.42) 0%, rgba(70,70,90,0.28) 20%, rgba(55,55,75,0.12) 48%, transparent 70%),
+    radial-gradient(ellipse 68% 62% at 48% 42%, rgba(60,60,80,0.30) 0%, rgba(45,45,65,0.16) 33%, rgba(35,35,55,0.07) 58%, transparent 78%),
+    radial-gradient(ellipse 100% 90% at 50% 50%, rgba(70,70,90,0.17) 0%, rgba(90,90,110,0.11) 38%, rgba(60,60,80,0.09) 68%, transparent 100%),
+    linear-gradient(170deg,
+      #f4f0fd 0%, #f1ecfa 6%, #efe9f7 14%,
+      #ede7f5 24%, #ece6f4 38%, #eee8f6 52%,
+      #f0eaf8 64%, #f1ecfa 76%, #f3effc 90%, #f4f0fd 100%);
+  box-shadow:
+    inset 0 2rpx 1rpx rgba(255,255,255,0.60),
+    inset 0 -3rpx 2rpx rgba(20,10,40,0.08),
+    inset 2rpx 0 1rpx rgba(255,255,255,0.30),
+    inset -2rpx 0 1rpx rgba(20,10,40,0.04),
+    inset 0 0 32rpx rgba(60,60,80,0.24),
+    inset 0 0 24rpx rgba(50,50,70,0.14),
+    inset 0 0 16rpx rgba(80,80,100,0.10),
+    0 0 20rpx rgba(60,60,80,0.26),
+    0 0 40rpx rgba(60,60,80,0.12),
+    0 0 60rpx rgba(40,40,60,0.08);
+}
+.ipod-body.theme-black .ipod-screen-inner {
+  background:
+    radial-gradient(ellipse 85% 65% at 50% 50%, rgba(60,60,80,0.28) 0%, transparent 70%);
+}
+
+.ipod-body.theme-orange .ipod-screen {
+  background:
+    radial-gradient(ellipse 88% 82% at 22% 18%, rgba(255,130,30,0.48) 0%, rgba(240,110,20,0.30) 18%, rgba(220,95,10,0.14) 44%, transparent 66%),
+    radial-gradient(ellipse 82% 78% at 74% 74%, rgba(255,160,60,0.42) 0%, rgba(245,140,40,0.28) 20%, rgba(230,120,20,0.12) 48%, transparent 70%),
+    radial-gradient(ellipse 68% 62% at 48% 42%, rgba(255,100,20,0.30) 0%, rgba(240,85,10,0.16) 33%, rgba(220,70,5,0.07) 58%, transparent 78%),
+    radial-gradient(ellipse 100% 90% at 50% 50%, rgba(255,130,30,0.17) 0%, rgba(255,160,60,0.11) 38%, rgba(255,100,20,0.09) 68%, transparent 100%),
+    linear-gradient(170deg,
+      #f4f0fd 0%, #f1ecfa 6%, #efe9f7 14%,
+      #ede7f5 24%, #ece6f4 38%, #eee8f6 52%,
+      #f0eaf8 64%, #f1ecfa 76%, #f3effc 90%, #f4f0fd 100%);
+  box-shadow:
+    inset 0 2rpx 1rpx rgba(255,255,255,0.60),
+    inset 0 -3rpx 2rpx rgba(20,10,40,0.08),
+    inset 2rpx 0 1rpx rgba(255,255,255,0.30),
+    inset -2rpx 0 1rpx rgba(20,10,40,0.04),
+    inset 0 0 32rpx rgba(255,130,30,0.24),
+    inset 0 0 24rpx rgba(255,100,20,0.14),
+    inset 0 0 16rpx rgba(255,160,60,0.10),
+    0 0 20rpx rgba(255,130,30,0.26),
+    0 0 40rpx rgba(255,130,30,0.12),
+    0 0 60rpx rgba(255,100,20,0.08);
+}
+.ipod-body.theme-orange .ipod-screen-inner {
+  background:
+    radial-gradient(ellipse 85% 65% at 50% 50%, rgba(255,130,30,0.28) 0%, transparent 70%);
+}
+
+.ipod-body.theme-cobalt .ipod-screen {
+  background:
+    radial-gradient(ellipse 88% 82% at 22% 18%, rgba(0,120,220,0.48) 0%, rgba(0,100,200,0.30) 18%, rgba(0,80,180,0.14) 44%, transparent 66%),
+    radial-gradient(ellipse 82% 78% at 74% 74%, rgba(40,160,255,0.42) 0%, rgba(20,140,240,0.28) 20%, rgba(0,120,220,0.12) 48%, transparent 70%),
+    radial-gradient(ellipse 68% 62% at 48% 42%, rgba(0,80,180,0.30) 0%, rgba(0,60,160,0.16) 33%, rgba(0,40,140,0.07) 58%, transparent 78%),
+    radial-gradient(ellipse 100% 90% at 50% 50%, rgba(0,120,220,0.17) 0%, rgba(40,160,255,0.11) 38%, rgba(0,80,180,0.09) 68%, transparent 100%),
+    linear-gradient(170deg,
+      #f4f0fd 0%, #f1ecfa 6%, #efe9f7 14%,
+      #ede7f5 24%, #ece6f4 38%, #eee8f6 52%,
+      #f0eaf8 64%, #f1ecfa 76%, #f3effc 90%, #f4f0fd 100%);
+  box-shadow:
+    inset 0 2rpx 1rpx rgba(255,255,255,0.60),
+    inset 0 -3rpx 2rpx rgba(20,10,40,0.08),
+    inset 2rpx 0 1rpx rgba(255,255,255,0.30),
+    inset -2rpx 0 1rpx rgba(20,10,40,0.04),
+    inset 0 0 32rpx rgba(0,120,220,0.24),
+    inset 0 0 24rpx rgba(0,100,200,0.14),
+    inset 0 0 16rpx rgba(40,160,255,0.10),
+    0 0 20rpx rgba(0,120,220,0.26),
+    0 0 40rpx rgba(0,120,220,0.12),
+    0 0 60rpx rgba(0,100,200,0.08);
+}
+.ipod-body.theme-cobalt .ipod-screen-inner {
+  background:
+    radial-gradient(ellipse 85% 65% at 50% 50%, rgba(0,120,220,0.28) 0%, transparent 70%);
+}
+
+.ipod-body.theme-taro .ipod-screen {
+  background:
+    radial-gradient(ellipse 88% 82% at 22% 18%, rgba(150,90,220,0.48) 0%, rgba(130,70,200,0.30) 18%, rgba(110,55,180,0.14) 44%, transparent 66%),
+    radial-gradient(ellipse 82% 78% at 74% 74%, rgba(180,120,240,0.42) 0%, rgba(160,100,230,0.28) 20%, rgba(140,80,210,0.12) 48%, transparent 70%),
+    radial-gradient(ellipse 68% 62% at 48% 42%, rgba(120,60,190,0.30) 0%, rgba(100,45,170,0.16) 33%, rgba(80,35,150,0.07) 58%, transparent 78%),
+    radial-gradient(ellipse 100% 90% at 50% 50%, rgba(150,90,220,0.17) 0%, rgba(180,120,240,0.11) 38%, rgba(120,60,190,0.09) 68%, transparent 100%),
+    linear-gradient(170deg,
+      #f4f0fd 0%, #f1ecfa 6%, #efe9f7 14%,
+      #ede7f5 24%, #ece6f4 38%, #eee8f6 52%,
+      #f0eaf8 64%, #f1ecfa 76%, #f3effc 90%, #f4f0fd 100%);
+  box-shadow:
+    inset 0 2rpx 1rpx rgba(255,255,255,0.60),
+    inset 0 -3rpx 2rpx rgba(20,10,40,0.08),
+    inset 2rpx 0 1rpx rgba(255,255,255,0.30),
+    inset -2rpx 0 1rpx rgba(20,10,40,0.04),
+    inset 0 0 32rpx rgba(150,90,220,0.24),
+    inset 0 0 24rpx rgba(130,70,200,0.14),
+    inset 0 0 16rpx rgba(180,120,240,0.10),
+    0 0 20rpx rgba(150,90,220,0.26),
+    0 0 40rpx rgba(150,90,220,0.12),
+    0 0 60rpx rgba(130,70,200,0.08);
+}
+.ipod-body.theme-taro .ipod-screen-inner {
+  background:
+    radial-gradient(ellipse 85% 65% at 50% 50%, rgba(150,90,220,0.28) 0%, transparent 70%);
+}
+
+.ipod-body.theme-pink .ipod-screen {
+  background:
+    radial-gradient(ellipse 88% 82% at 22% 18%, rgba(255,100,160,0.48) 0%, rgba(240,80,140,0.30) 18%, rgba(220,65,125,0.14) 44%, transparent 66%),
+    radial-gradient(ellipse 82% 78% at 74% 74%, rgba(255,130,180,0.42) 0%, rgba(245,110,165,0.28) 20%, rgba(230,95,150,0.12) 48%, transparent 70%),
+    radial-gradient(ellipse 68% 62% at 48% 42%, rgba(240,80,140,0.30) 0%, rgba(220,65,125,0.16) 33%, rgba(200,50,110,0.07) 58%, transparent 78%),
+    radial-gradient(ellipse 100% 90% at 50% 50%, rgba(255,100,160,0.17) 0%, rgba(255,130,180,0.11) 38%, rgba(240,80,140,0.09) 68%, transparent 100%),
+    linear-gradient(170deg,
+      #f4f0fd 0%, #f1ecfa 6%, #efe9f7 14%,
+      #ede7f5 24%, #ece6f4 38%, #eee8f6 52%,
+      #f0eaf8 64%, #f1ecfa 76%, #f3effc 90%, #f4f0fd 100%);
+  box-shadow:
+    inset 0 2rpx 1rpx rgba(255,255,255,0.60),
+    inset 0 -3rpx 2rpx rgba(20,10,40,0.08),
+    inset 2rpx 0 1rpx rgba(255,255,255,0.30),
+    inset -2rpx 0 1rpx rgba(20,10,40,0.04),
+    inset 0 0 32rpx rgba(255,100,160,0.24),
+    inset 0 0 24rpx rgba(255,80,140,0.14),
+    inset 0 0 16rpx rgba(255,130,180,0.10),
+    0 0 20rpx rgba(255,100,160,0.26),
+    0 0 40rpx rgba(255,100,160,0.12),
+    0 0 60rpx rgba(255,80,140,0.08);
+}
+.ipod-body.theme-pink .ipod-screen-inner {
+  background:
+    radial-gradient(ellipse 85% 65% at 50% 50%, rgba(255,100,160,0.28) 0%, transparent 70%);
+}
+
+.ipod-body.theme-citrus .ipod-screen {
+  background:
+    radial-gradient(ellipse 88% 82% at 22% 18%, rgba(230,190,10,0.48) 0%, rgba(210,170,10,0.30) 18%, rgba(190,150,8,0.14) 44%, transparent 66%),
+    radial-gradient(ellipse 82% 78% at 74% 74%, rgba(255,220,40,0.42) 0%, rgba(245,200,20,0.28) 20%, rgba(230,180,10,0.12) 48%, transparent 70%),
+    radial-gradient(ellipse 68% 62% at 48% 42%, rgba(210,170,10,0.30) 0%, rgba(190,150,8,0.16) 33%, rgba(170,130,6,0.07) 58%, transparent 78%),
+    radial-gradient(ellipse 100% 90% at 50% 50%, rgba(230,190,10,0.17) 0%, rgba(255,220,40,0.11) 38%, rgba(210,170,10,0.09) 68%, transparent 100%),
+    linear-gradient(170deg,
+      #f4f0fd 0%, #f1ecfa 6%, #efe9f7 14%,
+      #ede7f5 24%, #ece6f4 38%, #eee8f6 52%,
+      #f0eaf8 64%, #f1ecfa 76%, #f3effc 90%, #f4f0fd 100%);
+  box-shadow:
+    inset 0 2rpx 1rpx rgba(255,255,255,0.60),
+    inset 0 -3rpx 2rpx rgba(20,10,40,0.08),
+    inset 2rpx 0 1rpx rgba(255,255,255,0.30),
+    inset -2rpx 0 1rpx rgba(20,10,40,0.04),
+    inset 0 0 32rpx rgba(230,190,10,0.24),
+    inset 0 0 24rpx rgba(210,170,10,0.14),
+    inset 0 0 16rpx rgba(255,220,40,0.10),
+    0 0 20rpx rgba(230,190,10,0.26),
+    0 0 40rpx rgba(230,190,10,0.12),
+    0 0 60rpx rgba(210,170,10,0.08);
+}
+.ipod-body.theme-citrus .ipod-screen-inner {
+  background:
+    radial-gradient(ellipse 85% 65% at 50% 50%, rgba(230,190,10,0.28) 0%, transparent 70%);
+}
+
+/* ⭐ 色块流动 ① — 紫色大光晕 + 蓝色光晕 同体漂移 */
+.ipod-screen-inner::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 10rpx;
+  will-change: transform, opacity;
+  background:
+    radial-gradient(ellipse 75% 65% at 50% 50%, rgba(178,140,248,0.42) 0%, rgba(160,108,232,0.18) 40%, transparent 68%),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(88,200,245,0.30) 0%, rgba(72,185,230,0.10) 42%, transparent 65%);
+  animation: blobDriftPurple 8s ease-in-out infinite;
+}
+
+/* ⭐ 色块流动 ② — 青绿色大光晕反向漂移（替换粉色） */
+.ipod-screen-inner::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 10rpx;
+  will-change: transform, opacity;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,220,180,0.38) 0%, rgba(0,180,150,0.16) 38%, transparent 62%);
+  animation: blobDriftPink 10s ease-in-out infinite;
+}
+
+/* ⭐ 色块流动 ③ — 琥珀色光晕斜向漂移 */
+.neon-blob-extra {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 10rpx;
+  will-change: transform, opacity;
+  background:
+    radial-gradient(ellipse 65% 55% at 50% 50%, rgba(255,130,30,0.32) 0%, rgba(210,95,15,0.14) 40%, transparent 66%);
+  animation: blobDriftAmber 12s ease-in-out infinite;
+}
+
+/* ⭐ Cover Flow 全屏霓虹模式 — 背景铺满整个屏幕 */
+.ipod-screen-inner.neon-fullscreen {
+  padding: 0;
+  background:
+    radial-gradient(ellipse 70% 80% at 18% 55%, rgba(130,80,220,0.22) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 75% at 82% 50%, rgba(0,200,230,0.16) 0%, transparent 62%),
+    radial-gradient(ellipse 55% 50% at 50% 85%, rgba(220,60,160,0.13) 0%, transparent 65%),
+    linear-gradient(180deg, #161620 0%, #181822 40%, #161820 100%);
+}
+.ipod-screen-inner.neon-fullscreen::before,
+.ipod-screen-inner.neon-fullscreen::after,
+.ipod-screen-inner.neon-fullscreen .neon-blob-extra {
+  display: none;
+}
+.ipod-screen-inner.neon-fullscreen .ipod-header {
+  padding: 12rpx 16rpx 14rpx;
+}
+.ipod-screen-inner.neon-fullscreen .ipod-coverflow {
+  background: none;
+  border-radius: 0;
+}
+
+/* ⭐ Cover Flow 流动色块 — 熔岩灯霓虹 */
+.neon-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40rpx);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+.neon-blob-1 {
+  width: 320rpx; height: 320rpx;
+  top: 10%; left: -8%;
+  background: radial-gradient(circle, rgba(140,70,230,0.35) 0%, rgba(100,50,200,0.12) 50%, transparent 70%);
+  animation: cfBlobA 7s ease-in-out infinite;
+}
+.neon-blob-2 {
+  width: 280rpx; height: 280rpx;
+  top: 45%; right: -6%;
+  background: radial-gradient(circle, rgba(0,200,235,0.30) 0%, rgba(0,150,210,0.10) 50%, transparent 70%);
+  animation: cfBlobB 9s ease-in-out infinite;
+}
+.neon-blob-3 {
+  width: 300rpx; height: 300rpx;
+  bottom: 5%; left: 25%;
+  background: radial-gradient(circle, rgba(230,55,150,0.28) 0%, rgba(200,40,120,0.10) 50%, transparent 70%);
+  animation: cfBlobC 8s ease-in-out infinite;
+}
+.neon-blob-4 {
+  width: 200rpx; height: 200rpx;
+  top: 30%; left: 40%;
+  background: radial-gradient(circle, rgba(80,180,255,0.24) 0%, rgba(50,130,220,0.08) 50%, transparent 70%);
+  animation: cfBlobD 6s ease-in-out infinite;
+}
+.neon-blob-5 {
+  width: 260rpx; height: 260rpx;
+  top: 60%; left: 5%;
+  background: radial-gradient(circle, rgba(180,30,80,0.32) 0%, rgba(140,20,60,0.12) 50%, transparent 70%);
+  animation: cfBlobE 10s ease-in-out infinite;
+}
+.neon-blob-6 {
+  width: 240rpx; height: 240rpx;
+  top: 15%; right: 10%;
+  background: radial-gradient(circle, rgba(20,100,60,0.30) 0%, rgba(10,70,40,0.10) 50%, transparent 70%);
+  animation: cfBlobF 8s ease-in-out infinite;
+}
+
+@keyframes cfBlobA {
+  0%, 100% { opacity: 0.6; transform: translate(0,0) scale(1); }
+  25%      { opacity: 0.9; transform: translate(60%, -30%) scale(1.35); }
+  50%      { opacity: 0.45; transform: translate(-20%, 50%) scale(0.8); }
+  75%      { opacity: 0.75; transform: translate(30%, 20%) scale(1.15); }
+}
+@keyframes cfBlobB {
+  0%, 100% { opacity: 0.55; transform: translate(0,0) scale(1); }
+  30%      { opacity: 0.85; transform: translate(-50%, 25%) scale(1.3); }
+  60%      { opacity: 0.4; transform: translate(20%, -40%) scale(0.75); }
+  80%      { opacity: 0.7; transform: translate(-15%, 10%) scale(1.1); }
+}
+@keyframes cfBlobC {
+  0%, 100% { opacity: 0.5; transform: translate(0,0) scale(1); }
+  20%      { opacity: 0.8; transform: translate(40%, -35%) scale(1.25); }
+  50%      { opacity: 0.35; transform: translate(-30%, -15%) scale(0.85); }
+  75%      { opacity: 0.65; transform: translate(15%, 25%) scale(1.2); }
+}
+@keyframes cfBlobD {
+  0%, 100% { opacity: 0.4; transform: translate(0,0) scale(1); }
+  33%      { opacity: 0.7; transform: translate(-40%, 40%) scale(1.3); }
+  66%      { opacity: 0.3; transform: translate(35%, -20%) scale(0.7); }
+}
+@keyframes cfBlobE {
+  0%, 100% { opacity: 0.5; transform: translate(0,0) scale(1); }
+  25%      { opacity: 0.8; transform: translate(50%, -30%) scale(1.25); }
+  50%      { opacity: 0.35; transform: translate(-25%, 20%) scale(0.8); }
+  75%      { opacity: 0.65; transform: translate(20%, -35%) scale(1.15); }
+}
+@keyframes cfBlobF {
+  0%, 100% { opacity: 0.45; transform: translate(0,0) scale(1); }
+  30%      { opacity: 0.75; transform: translate(-45%, 35%) scale(1.2); }
+  60%      { opacity: 0.3; transform: translate(25%, -25%) scale(0.85); }
+  80%      { opacity: 0.6; transform: translate(-10%, 15%) scale(1.1); }
+}
+
+/* 屏幕关闭状态 */
+.ipod-screen.backlight-off {
+  background: #222 !important;
+  box-shadow: none !important;
+}
+.ipod-screen.backlight-off::before,
+.ipod-screen.backlight-off::after {
+  display: none;
+}
+.ipod-screen.backlight-off .ipod-screen-inner {
+  opacity: 0;
+}
+
+/* ===========================================
+   标题栏（屏幕内部）
+   =========================================== */
+.ipod-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14rpx;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+/* 标题移到左边，金色烫印效果 — 与 Cover Flow 深色背景上一致 */
+.ipod-header-title {
+  flex: 1;
+  text-align: left;
+  font-size: 30rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  /* 实色金色 — 在浅/深背景上均与 Cover Flow 一致 */
+  color: rgba(232,195,110,0.82);
+  -webkit-text-fill-color: rgba(232,195,110,0.82);
+  -webkit-text-stroke: 0.5rpx rgba(255,220,140,0.30);
+  text-shadow: 0 0 8rpx rgba(255,200,100,0.22);
+  filter:
+    drop-shadow(0 0 2rpx rgba(255,215,100,0.15));
+}
+.ipod-header-back {
+  width: 48rpx;
+  color: rgba(255,255,255,0.72);
+  font-size: 34rpx;
+  font-weight: 300;
+}
+/* 电池图标 — 液态玻璃 */
+.battery-icon {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 3rpx 5rpx;
+  border: 0.5rpx solid rgba(255,255,255,0.12);
+  border-radius: 5rpx;
+  position: relative;
+  backdrop-filter: blur(8px) saturate(1.5);
+  -webkit-backdrop-filter: blur(8px) saturate(1.5);
+  background: transparent;
+  box-shadow: none;
+}
+.battery-icon .cap {
+  position: absolute;
+  right: -5rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4rpx;
+  height: 10rpx;
+  background: rgba(255,255,255,0.10);
+  border-radius: 0 3rpx 3rpx 0;
+}
+.battery-icon .bar {
+  width: 4rpx;
+  height: 16rpx;
+  background: rgba(180,200,255,0.35);
+  border-radius: 2rpx;
+  box-shadow: none;
+}
+
+/* ===========================================
+   菜单列表
+   =========================================== */
+.ipod-menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ipod-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 16rpx;
+  margin: 3rpx 0;
+  border-radius: 10rpx;
+  transition: all 0.22s;
+  background: transparent;
+}
+/* 高亮条 — 液态玻璃浮层卡片 */
+.ipod-menu-item.active {
+  backdrop-filter: blur(18px) saturate(1.8);
+  -webkit-backdrop-filter: blur(18px) saturate(1.8);
+  background:
+    linear-gradient(175deg,
+      rgba(255,255,255,0.28) 0%,
+      rgba(178,140,248,0.20) 25%,
+      rgba(210,125,205,0.16) 50%,
+      rgba(255,108,172,0.14) 70%,
+      rgba(178,140,248,0.18) 100%);
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.65),
+    inset 0 -1rpx 1rpx rgba(20,10,40,0.10),
+    inset 1rpx 0 0.5rpx rgba(255,255,255,0.35),
+    inset -1rpx 0 0.5rpx rgba(20,10,40,0.06),
+    0 2rpx 10rpx rgba(178,140,248,0.25),
+    0 0 22rpx rgba(178,140,248,0.18),
+    0 0 10rpx rgba(255,108,172,0.14);
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+}
+.ipod-menu-item-label {
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+.ipod-menu-item-arrow {
+  color: rgba(255,255,255,0.55);
+  font-size: 26rpx;
+  font-weight: 300;
+}
+
+/* 底部正在播放提示条 — 液态玻璃分隔 */
+.ipod-nowplaying-bar {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 12rpx 0 0;
+  border-top: 0.5rpx solid rgba(255,255,255,0.20);
+  flex-shrink: 0;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.ipod-nowplaying-bar .icon-play {
+  width: 10rpx;
+  height: 12rpx;
+  border-left: 10rpx solid rgba(88,200,245,0.85);
+  border-top: 6rpx solid transparent;
+  border-bottom: 6rpx solid transparent;
+}
+.ipod-nowplaying-bar .info {
+  color: rgba(255,255,255,0.78);
+  font-size: 22rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===========================================
+   搜索
+   =========================================== */
+.ipod-search-box {
+  display: flex;
+  gap: 0;
+  padding: 10rpx 0 16rpx;
+  flex-shrink: 0;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+.ipod-search-box input {
+  flex: 1;
+  height: 58rpx;
+  backdrop-filter: blur(10px) saturate(1.6);
+  -webkit-backdrop-filter: blur(10px) saturate(1.6);
+  background: rgba(255,255,255,0.14);
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+  border-right: none;
+  border-radius: 10rpx 0 0 10rpx;
+  padding: 0 16rpx;
+  color: #ffffff;
+  font-size: 24rpx;
+  text-shadow: none;
+  box-shadow:
+    inset 0 1rpx 0.5rpx rgba(255,255,255,0.35),
+    inset 0 -1rpx 2rpx rgba(20,10,40,0.05);
+}
+.ipod-search-box input::placeholder {
+  color: rgba(255,255,255,0.45);
+}
+/* 搜索按钮 — 液态玻璃 */
+.ipod-search-btn {
+  width: 90rpx;
+  height: 58rpx;
+  background: linear-gradient(135deg, rgba(178,140,248,0.90) 0%, rgba(255,108,172,0.78) 100%);
+  backdrop-filter: blur(8px) saturate(1.6);
+  -webkit-backdrop-filter: blur(8px) saturate(1.6);
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 600;
+  border-radius: 0 10rpx 10rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.45),
+    inset 0 -1rpx 1rpx rgba(20,10,40,0.10),
+    0 0 12rpx rgba(178,140,248,0.20);
+}
+
+/* 搜索空状态 */
+.ipod-search-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+  opacity: 0.7;
+}
+.ipod-search-empty-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border: 3rpx solid rgba(255,255,255,0.20);
+  border-radius: 50%;
+  position: relative;
+}
+.ipod-search-empty-icon::after {
+  content: '';
+  position: absolute;
+  right: -6rpx;
+  bottom: -4rpx;
+  width: 22rpx;
+  height: 4rpx;
+  background: rgba(255,255,255,0.20);
+  border-radius: 3rpx;
+  transform: rotate(45deg);
+}
+.ipod-search-empty-text {
+  color: rgba(255,255,255,0.48);
+  font-size: 24rpx;
+}
+.ipod-search-retry-btn {
+  margin-top: 8rpx;
+  padding: 12rpx 32rpx;
+  background: linear-gradient(135deg, rgba(178,140,248,0.90) 0%, rgba(255,108,172,0.78) 100%);
+  backdrop-filter: blur(8px) saturate(1.6);
+  -webkit-backdrop-filter: blur(8px) saturate(1.6);
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 600;
+  border-radius: 30rpx;
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.45),
+    inset 0 -1rpx 1rpx rgba(20,10,40,0.10);
+}
+
+/* 搜索结果项 */
+.ipod-search-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 12rpx;
+  border-bottom: 0.5rpx solid rgba(255,255,255,0.12);
+  gap: 14rpx;
+}
+.ipod-search-item .info {
+  flex: 1;
+  overflow: hidden;
+}
+.ipod-search-item .name {
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ipod-search-item .artist {
+  color: rgba(255,255,255,0.72);
+  font-size: 20rpx;
+  margin-top: 3rpx;
+}
+.ipod-search-item .arrow {
+  color: rgba(255,255,255,0.55);
+  font-size: 26rpx;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ===========================================
+   正在播放
+   =========================================== */
+.ipod-player {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 上半区：左专辑 + 右歌词 */
+.ipod-player-main {
+  flex: 1;
+  display: flex;
+  gap: 16rpx;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 左侧 — 专辑封面 + 歌曲信息 */
+.ipod-player-left {
+  width: 170rpx;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  padding-top: 6rpx;
+}
+
+/* 右侧 — 歌词滚动 */
+.ipod-player-right {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ipod-player-cover {
+  width: 170rpx;
+  height: 170rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.35),
+    inset 0 -1rpx 2rpx rgba(20,10,40,0.08),
+    0 4rpx 16rpx rgba(154,128,196,0.14),
+    0 0 0 0.5rpx rgba(255,255,255,0.18);
+}
+.ipod-player-meta {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  overflow: hidden;
+  padding: 0 4rpx;
+}
+.ipod-player-meta .title {
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  width: 100%;
+}
+.ipod-player-meta .artist {
+  color: rgba(255,255,255,0.72);
+  font-size: 18rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  width: 100%;
+}
+
+/* 歌词滚动 */
+.ipod-player-lyrics {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4rpx 0;
+  -webkit-overflow-scrolling: touch;
+}
+.ipod-player-lyrics .line {
+  color: rgba(255,255,255,0.55);
+  font-size: 22rpx;
+  line-height: 2.0;
+  padding: 2rpx 8rpx;
+  text-align: left;
+  transition: all 0.3s;
+}
+/* 空歌词占位 */
+.ipod-player-lyrics .line.empty {
+  color: rgba(255,255,255,0.38);
+  text-align: center;
+  padding-top: 40rpx;
+  font-size: 20rpx;
+}
+/* 当前行 — 淡雅高亮 */
+.ipod-player-lyrics .line.active {
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 600;
+  text-shadow: 0 0 10rpx rgba(178,140,248,0.35), 0 0 5rpx rgba(210,125,205,0.20), 0 0 4rpx rgba(255,108,172,0.16), 0 0 3rpx rgba(88,200,245,0.12);
+}
+
+/* 进度条 */
+.ipod-player-progress {
+  flex-shrink: 0;
+  padding: 8rpx 16rpx 6rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+.ipod-player-progress-bar {
+  height: 4rpx;
+  background: rgba(255,255,255,0.10);
+  border-radius: 2rpx;
+  position: relative;
+  margin-bottom: 6rpx;
+}
+.ipod-player-progress-bar .fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(178,140,248,0.95) 0%, rgba(200,130,220,0.88) 30%, rgba(235,115,185,0.82) 55%, rgba(255,108,172,0.78) 75%, rgba(155,160,230,0.74) 88%, rgba(88,200,245,0.72) 100%);
+  border-radius: 2rpx;
+  transition: width 0.3s linear;
+  box-shadow: 0 0 10rpx rgba(178,140,248,0.28), 0 0 6rpx rgba(255,108,172,0.16);
+}
+.ipod-player-progress-bar .dot {
+  position: absolute;
+  top: -6rpx;
+  width: 16rpx;
+  height: 16rpx;
+  background: #fff;
+  border: 2rpx solid rgba(178,140,248,0.60);
+  border-radius: 50%;
+  box-shadow:
+    0 2rpx 8rpx rgba(154,128,196,0.24),
+    0 0 16rpx rgba(178,140,248,0.28),
+    0 0 8rpx rgba(255,108,172,0.18),
+    0 0 4rpx rgba(88,200,245,0.14);
+  transform: translateX(-50%);
+}
+.ipod-player-time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18rpx;
+  color: rgba(255,255,255,0.55);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+}
+
+/* 加载状态 */
+.ipod-player-loading {
+  flex-shrink: 0;
+  padding: 12rpx 0;
+  text-align: center;
+}
+.ipod-player-loading .loading-text {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.55);
+}
+
+/* 播放控制栏 */
+.ipod-player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 12rpx 0 2rpx;
+  flex-shrink: 0;
+}
+.ipod-player-controls .ctrl {
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: rgba(255,255,255,0.78);
+}
+/* 播放按钮 — 液态玻璃球体 */
+.ipod-player-controls .ctrl.play-btn {
+  width: 64rpx;
+  height: 64rpx;
+  background: linear-gradient(135deg, rgba(178,140,248,0.90) 0%, rgba(255,108,172,0.78) 100%);
+  backdrop-filter: blur(8px) saturate(1.6);
+  -webkit-backdrop-filter: blur(8px) saturate(1.6);
+  border-radius: 50%;
+  font-size: 36rpx;
+  color: #ffffff;
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+  box-shadow:
+    inset 0 2rpx 2rpx rgba(255,255,255,0.50),
+    inset 0 -2rpx 2rpx rgba(20,10,40,0.12),
+    inset 3rpx 0 2rpx rgba(255,255,255,0.25),
+    inset -3rpx 0 2rpx rgba(20,10,40,0.08),
+    0 3rpx 14rpx rgba(178,140,248,0.35),
+    0 0 28rpx rgba(178,140,248,0.22),
+    0 0 12rpx rgba(255,108,172,0.16);
+}
+
+/* 播放图标 */
+.play-icon-play {
+  width: 0;
+  height: 0;
+  border-left: 20rpx solid #ffffff;
+  border-top: 12rpx solid transparent;
+  border-bottom: 12rpx solid transparent;
+  margin-left: 4rpx;
+}
+.play-icon-pause {
+  display: flex;
+  gap: 6rpx;
+}
+.play-icon-pause::before,
+.play-icon-pause::after {
+  content: '';
+  width: 5rpx;
+  height: 20rpx;
+  background: #ffffff;
+  border-radius: 2rpx;
+}
+.play-icon-prev {
+  width: 0;
+  height: 0;
+  border-right: 15rpx solid rgba(255,255,255,0.78);
+  border-top: 11rpx solid transparent;
+  border-bottom: 11rpx solid transparent;
+  position: relative;
+}
+.play-icon-prev::after {
+  content: '';
+  position: absolute;
+  left: 7rpx;
+  top: -11rpx;
+  width: 3rpx;
+  height: 22rpx;
+  background: rgba(255,255,255,0.70);
+  border-radius: 2rpx;
+}
+.play-icon-next {
+  width: 0;
+  height: 0;
+  border-left: 15rpx solid rgba(255,255,255,0.78);
+  border-top: 11rpx solid transparent;
+  border-bottom: 11rpx solid transparent;
+  position: relative;
+}
+.play-icon-next::after {
+  content: '';
+  position: absolute;
+  right: 7rpx;
+  top: -11rpx;
+  width: 3rpx;
+  height: 22rpx;
+  background: rgba(255,255,255,0.70);
+  border-radius: 2rpx;
+}
+
+/* 随机播放 — X 交叉标记 */
+.play-icon-shuffle {
+  position: relative;
+  width: 24rpx;
+  height: 24rpx;
+}
+.play-icon-shuffle::before,
+.play-icon-shuffle::after {
+  content: '';
+  position: absolute;
+  width: 18rpx;
+  height: 3rpx;
+  background: rgba(255,255,255,0.70);
+  border-radius: 1.5rpx;
+  top: 50%;
+  left: 50%;
+}
+.play-icon-shuffle::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.play-icon-shuffle::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* 顺序播放 — 循环箭头 */
+.play-icon-repeat {
+  position: relative;
+  width: 24rpx;
+  height: 24rpx;
+}
+.play-icon-repeat::before {
+  content: '';
+  position: absolute;
+  top: 4rpx;
+  left: 5rpx;
+  width: 16rpx;
+  height: 12rpx;
+  border: 3rpx solid rgba(255,255,255,0.78);
+  border-bottom: none;
+  border-radius: 10rpx 10rpx 0 0;
+}
+.play-icon-repeat::after {
+  content: '';
+  position: absolute;
+  top: 2rpx;
+  right: 4rpx;
+  width: 0;
+  height: 0;
+  border-left: 7rpx solid rgba(255,255,255,0.78);
+  border-top: 5rpx solid transparent;
+  border-bottom: 5rpx solid transparent;
+  transform: rotate(-25deg);
+}
+
+/* 单曲循环 — 循环箭头 + 1 */
+.play-icon-repeat-one {
+  position: relative;
+  width: 24rpx;
+  height: 24rpx;
+}
+.play-icon-repeat-one::before {
+  content: '';
+  position: absolute;
+  top: 4rpx;
+  left: 5rpx;
+  width: 16rpx;
+  height: 12rpx;
+  border: 3rpx solid rgba(255,255,255,0.78);
+  border-bottom: none;
+  border-radius: 10rpx 10rpx 0 0;
+}
+.play-icon-repeat-one::after {
+  content: '';
+  position: absolute;
+  top: 2rpx;
+  right: 4rpx;
+  width: 0;
+  height: 0;
+  border-left: 7rpx solid rgba(255,255,255,0.78);
+  border-top: 5rpx solid transparent;
+  border-bottom: 5rpx solid transparent;
+  transform: rotate(-25deg);
+}
+
+/* 单曲循环 "1" 标签 */
+.play-icon-repeat-one-label {
+  position: absolute;
+  top: 9rpx;
+  left: 8rpx;
+  color: rgba(255,255,255,0.78);
+  font-size: 15rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* 音量 — 喇叭 + 声波 */
+.play-icon-volume {
+  position: relative;
+  width: 8rpx;
+  height: 14rpx;
+  background: rgba(255,255,255,0.70);
+  border-radius: 1rpx;
+}
+.play-icon-volume::before {
+  content: '';
+  position: absolute;
+  left: -4rpx;
+  top: 2rpx;
+  width: 0;
+  height: 0;
+  border-top: 5rpx solid transparent;
+  border-bottom: 5rpx solid transparent;
+  border-right: 6rpx solid rgba(255,255,255,0.78);
+}
+.play-icon-volume::after {
+  content: '';
+  position: absolute;
+  left: 12rpx;
+  top: 3rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border: 2rpx solid rgba(255,255,255,0.78);
+  border-left: none;
+  border-radius: 0 50% 50% 0;
+}
+
+/* ===========================================
+   音乐列表通用收藏心形
+   =========================================== */
+.heart {
+  font-size: 28rpx;
+  flex-shrink: 0;
+  padding: 6rpx 8rpx;
+  margin-left: 4rpx;
+  color: rgba(255,255,255,0.35);
+  transition: all 0.2s;
+}
+.heart.hearted {
+  color: #ff6cac;
+  text-shadow: 0 0 8rpx rgba(255,108,172,0.45), 0 0 16rpx rgba(255,108,172,0.20);
+}
+.heart.nowplaying-heart {
+  font-size: 32rpx;
+  padding: 10rpx;
+  margin-top: 6rpx;
+}
+
+/* ===========================================
+   CoverFlow
+   =========================================== */
+.ipod-coverflow {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  /* ——— 深色霓虹背景 ——— */
+  background:
+    /* 左侧霓虹紫光晕 */
+    radial-gradient(ellipse 70% 80% at 18% 55%, rgba(130,80,220,0.38) 0%, transparent 65%),
+    /* 右侧霓虹青蓝光晕 */
+    radial-gradient(ellipse 60% 75% at 82% 50%, rgba(0,200,230,0.28) 0%, transparent 62%),
+    /* 中央底部粉红晕 */
+    radial-gradient(ellipse 55% 50% at 50% 85%, rgba(220,60,160,0.22) 0%, transparent 65%),
+    /* 深色底层 */
+    linear-gradient(180deg, #0d0d14 0%, #101018 40%, #0d0f18 100%);
+  border-radius: 8rpx;
+}
+.ipod-coverflow-track {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 400rpx;
+}
+.ipod-coverflow-item {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 170rpx;
+  transition: transform 0.35s ease-out, left 0.35s ease-out, opacity 0.35s ease-out;
+  -webkit-transform-style: preserve-3d;
+          transform-style: preserve-3d;
+}
+.ipod-coverflow-cover {
+  width: 170rpx;
+  height: 170rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow:
+    0 6rpx 20rpx rgba(0,0,0,0.65),
+    0 0 0 1rpx rgba(180,140,255,0.20),
+    0 0 16rpx rgba(120,80,220,0.25);
+}
+.ipod-coverflow-cover image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* ——— 镜像倒影 ——— */
+.ipod-coverflow-reflection {
+  width: 170rpx;
+  height: 110rpx;
+  overflow: hidden;
+  position: relative;
+  margin-top: 0;
+}
+.ipod-coverflow-reflection image {
+  width: 100%;
+  height: 170rpx;
+  display: block;
+  transform: scaleY(-1);
+}
+.ipod-coverflow-reflection-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 深色霓虹背景下，倒影遮罩用深色渐变 */
+  background: linear-gradient(
+    to bottom,
+    rgba(13,13,20,0.30) 0%,
+    rgba(13,13,20,0.55) 30%,
+    rgba(13,13,20,0.78) 62%,
+    rgba(13,13,20,0.94) 100%
+  );
+  pointer-events: none;
+}
+.ipod-coverflow-item.active .ipod-coverflow-cover {
+  box-shadow:
+    0 10rpx 36rpx rgba(0,0,0,0.75),
+    0 0 0 1rpx rgba(200,160,255,0.40),
+    0 0 28rpx rgba(140,80,255,0.50),
+    0 0 56rpx rgba(0,180,230,0.20);
+}
+.ipod-coverflow-item.active {}
+.ipod-coverflow-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 110;
+  text-align: center;
+  padding: 12rpx;
+  background: linear-gradient(180deg,
+    rgba(13,13,20,0) 0%,
+    rgba(13,13,20,0.60) 10%,
+    rgba(13,13,20,0.82) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.ipod-coverflow-label .title {
+  color: #f0eeff;
+  font-size: 26rpx;
+  font-weight: 600;
+  text-shadow: 0 0 12rpx rgba(160,100,255,0.55);
+}
+.ipod-coverflow-label .artist {
+  color: rgba(180,160,255,0.80);
+  font-size: 20rpx;
+  margin-top: 2rpx;
+}
+
+/* ===========================================
+   热门推荐
+   =========================================== */
+.ipod-hot-item {
+  display: flex;
+  align-items: center;
+  padding: 18rpx 14rpx;
+  border-bottom: 0.5rpx solid rgba(255,255,255,0.12);
+  gap: 8rpx;
+}
+.ipod-hot-item .info { flex: 1; overflow: hidden; }
+.ipod-hot-item .name {
+  color: #ffffff;
+  font-size: 26rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ipod-hot-item .artist {
+  color: rgba(255,255,255,0.72);
+  font-size: 20rpx;
+  margin-top: 3rpx;
+}
+.ipod-hot-item .arrow { color: rgba(255,255,255,0.55); font-size: 22rpx; }
+
+.hot-rank {
+  font-size: 26rpx;
+  font-weight: 800;
+  width: 40rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+.rank-1 { color: #d06898; }
+.rank-2 { color: #9060cc; }
+.rank-3 { color: #4db8d8; }
+.hot-cover {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.08);
+}
+
+.ipod-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  opacity: 0.6;
+}
+.ipod-empty-state text {
+  color: rgba(255,255,255,0.45);
+  font-size: 24rpx;
+}
+/* 重试按钮 */
+.ipod-empty-retry {
+  margin-top: 12rpx;
+  padding: 14rpx 40rpx;
+  background: linear-gradient(135deg, rgba(178,140,248,0.90) 0%, rgba(255,108,172,0.78) 100%);
+  backdrop-filter: blur(8px) saturate(1.6);
+  -webkit-backdrop-filter: blur(8px) saturate(1.6);
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 600;
+  border-radius: 30rpx;
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.45),
+    inset 0 -1rpx 1rpx rgba(20,10,40,0.10),
+    0 0 12rpx rgba(178,140,248,0.18);
+}
+
+/* ===========================================
+   设置
+   =========================================== */
+.ipod-setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 16rpx;
+  border-bottom: 0.5rpx solid rgba(255,255,255,0.12);
+  margin: 3rpx 0;
+  border-radius: 10rpx;
+}
+.ipod-setting-item .label {
+  color: #ffffff;
+  font-size: 26rpx;
+}
+.ipod-setting-item .value {
+  color: rgba(255,255,255,0.72);
+  font-size: 24rpx;
+}
+/* 设置高亮 — 液态玻璃 */
+.ipod-setting-item.active {
+  backdrop-filter: blur(18px) saturate(1.8);
+  -webkit-backdrop-filter: blur(18px) saturate(1.8);
+  background:
+    linear-gradient(175deg,
+      rgba(255,255,255,0.28) 0%,
+      rgba(178,140,248,0.20) 25%,
+      rgba(210,125,205,0.16) 50%,
+      rgba(255,108,172,0.14) 70%,
+      rgba(178,140,248,0.18) 100%);
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.65),
+    inset 0 -1rpx 1rpx rgba(20,10,40,0.10),
+    0 2rpx 10rpx rgba(178,140,248,0.25),
+    0 0 20rpx rgba(178,140,248,0.18),
+    0 0 8rpx rgba(255,108,172,0.12);
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+}
+
+/* ===========================================
+   滚轮 — iPod Click Wheel · 陶瓷嵌入金属机身
+   沉坑底衬 → 轮盘 → 中心按钮 三层立体结构
+   =========================================== */
+.ipod-wheel-wrap {
+  position: absolute;
+  top: 54%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 57%;
+  z-index: 5;
+}
+
+.ipod-wheel {
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  border-radius: 50%;
+  position: relative;
+  /* 白色陶瓷 — 微凸渐变 */
+  background: radial-gradient(circle at 50% 50%,
+    #fcfcfc 0%, #f6f6f6 30%, #efefef 58%, #e8e8e8 78%, #e4e4e4 100%);
+  box-shadow:
+    /* 外圈立体斜面 — 三层模拟物理倒角 */
+    0 0 0 1rpx rgba(130,130,130,0.22),
+    0 0 0 2rpx rgba(175,175,175,0.34),
+    0 0 0 4rpx rgba(215,215,215,0.50),
+    /* 凸面顶部高光 — 光源从左上照到曲面顶部 */
+    inset 0 2rpx 3rpx rgba(255,255,255,0.80),
+    /* 凸面底部渐暗 — 曲面下方背光 */
+    inset 0 -4rpx 12rpx rgba(0,0,0,0.04),
+    /* 凸面两侧微暗 */
+    inset 6rpx 0 14rpx rgba(0,0,0,0.015),
+    inset -6rpx 0 14rpx rgba(0,0,0,0.015);
+}
+
+/* 表面柔光 — 陶瓷哑光漫反射 */
+.ipod-wheel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(ellipse 52% 36% at 48% 38%,
+    rgba(255,255,255,0.40) 0%,
+    rgba(255,255,255,0.14) 38%,
+    transparent 72%);
+}
+
+/* 内圈刻痕 — 已移除 */
+.ipod-wheel-ring {
+  display: none;
+}
+
+/* 中心按钮 — 白色陶瓷轻微凹陷 */
+.ipod-wheel-center {
+  width: 36%;
+  height: 36%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 3;
+  box-shadow:
+    /* 顶部高光 — 金属倒角 */
+    inset 0 3rpx 2rpx rgba(255,255,255,0.85),
+    inset 0 1rpx 0 rgba(255,255,255,0.70),
+    /* 底部暗带 — 背光切面 */
+    inset 0 -4rpx 2rpx rgba(0,0,0,0.30),
+    inset 0 -2rpx 1rpx rgba(0,0,0,0.18),
+    /* 左侧暗面 */
+    inset 4rpx 0 6rpx -2rpx rgba(0,0,0,0.16),
+    inset 2rpx 0 2rpx rgba(0,0,0,0.10),
+    /* 右侧反光 */
+    inset -4rpx 0 6rpx -2rpx rgba(255,255,255,0.15),
+    inset -2rpx 0 2rpx rgba(255,255,255,0.08),
+    /* 内圈边缘台阶 */
+    0 0 0 1.5rpx rgba(150,150,150,0.28),
+    0 0 0 2.5rpx rgba(210,210,210,0.15);
+}
+
+/* 中心按钮表面柔光 — 与机身::before一致的双光源 */
+.ipod-wheel-center::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    /* 左上主光源镜面反射 */
+    linear-gradient(142deg,
+      rgba(255,255,255,0.55) 0%,
+      rgba(255,255,255,0.22) 8%,
+      transparent 22%),
+    /* 底部反弹光 */
+    radial-gradient(ellipse 60% 30% at 50% 88%,
+      rgba(255,255,255,0.18) 0%,
+      transparent 70%);
+}
+
+/* ═══ 轮盘中心金属弧面色 — 跟随机身7色 ═══ */
+.ipod-body.theme-silver .ipod-wheel-center {
+  background: linear-gradient(140deg,
+    #ffffff 0%, #fafbfe 1.5%, #f3f5fa 3%,
+    #e6e9f0 7%, #d5d9e2 12%,
+    #c3c7d2 19%, #b1b6c2 28%,
+    #a2a7b4 38%, #949aa7 48%,
+    #898f9c 56%, #7f8592 64%,
+    #767c89 73%, #6e7481 82%,
+    #696f7c 90%, #656b78 100%);
+}
+.ipod-body.theme-black .ipod-wheel-center {
+  background: linear-gradient(140deg,
+    #6a6a70 0%, #5e5e64 3%, #525258 7%,
+    #46464c 12%, #3a3a40 19%,
+    #2e2e34 28%, #252528 38%,
+    #1e1e22 48%, #18181c 56%,
+    #141416 64%, #101012 73%,
+    #0c0c0e 82%, #08080a 90%,
+    #050506 95%, #030304 100%);
+}
+.ipod-body.theme-orange .ipod-wheel-center {
+  background: linear-gradient(140deg,
+    #ffd0a0 0%, #ffc080 3%, #ffb060 7%,
+    #ff9840 12%, #f88820 19%,
+    #e87810 28%, #d86808 38%,
+    #c85806 48%, #b84805 56%,
+    #a03804 64%, #882c03 73%,
+    #702403 82%, #581c02 90%,
+    #401402 95%, #2c0e01 100%);
+}
+.ipod-body.theme-cobalt .ipod-wheel-center {
+  background: linear-gradient(140deg,
+    #a8d0ff 0%, #88c0ff 3%, #68b0f8 7%,
+    #48a0f0 12%, #2890e8 19%,
+    #0080e0 28%, #0070d8 38%,
+    #0060c8 48%, #0050b8 56%,
+    #0040a8 64%, #003898 73%,
+    #002c80 82%, #002068 90%,
+    #001850 95%, #001038 100%);
+}
+.ipod-body.theme-taro .ipod-wheel-center {
+  background: linear-gradient(140deg,
+    #e8dcf8 0%, #dcc8f0 3%, #c8b0e8 7%,
+    #b89ce0 12%, #a888d8 19%,
+    #9878d0 28%, #8868c8 38%,
+    #7858c0 48%, #6848b8 56%,
+    #5838a8 64%, #483098 73%,
+    #382880 82%, #2c2068 90%,
+    #201850 95%, #140c38 100%);
+}
+.ipod-body.theme-pink .ipod-wheel-center {
+  background: linear-gradient(140deg,
+    #fff0f5 0%, #ffe0ec 3%, #ffd0e0 7%,
+    #ffc0d4 12%, #ffb0c8 19%,
+    #ffa0bc 28%, #f090b0 38%,
+    #e080a4 48%, #d07098 56%,
+    #c0608c 64%, #b05080 73%,
+    #984870 82%, #803c60 90%,
+    #683050 95%, #502440 100%);
+}
+.ipod-body.theme-citrus .ipod-wheel-center {
+  background: linear-gradient(140deg,
+    #fff8c8 0%, #fff0a8 3%, #ffe888 7%,
+    #ffe068 12%, #ffd848 19%,
+    #f0d020 28%, #e0c010 38%,
+    #c8b008 48%, #b0a006 56%,
+    #989004 64%, #807803 73%,
+    #686802 82%, #505001 90%,
+    #3c3c01 95%, #2a2a00 100%);
+}
+
+/* 四向按钮文字 */
+.ipod-wheel-btn {
+  position: absolute;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  font-size: 20rpx;
+  color: rgba(0,0,0,0.50);
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: auto;
+  padding: 10rpx;
+}
+.ipod-wheel-btn.top    { top: 13%;  left: 50%; transform: translateX(-50%); font-size: 22rpx; }
+.ipod-wheel-btn.bottom { bottom: 13%; left: 50%; transform: translateX(-50%); font-size: 18rpx; }
+.ipod-wheel-btn.left   { left: 13%;  top: 50%; transform: translateY(-50%); font-size: 23rpx; }
+.ipod-wheel-btn.right  { right: 13%; top: 50%; transform: translateY(-50%); font-size: 23rpx; }
+
+/* ===========================================
+   本地音乐导入
+   =========================================== */
+.ipod-local {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.ipod-local-list {
+  flex: 1;
+}
+/* 导入按钮 — 液态玻璃 */
+.ipod-import-btn,
+.ipod-local-import-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  margin: 16rpx 0;
+  padding: 18rpx 0;
+  background: linear-gradient(135deg, rgba(178,140,248,0.90) 0%, rgba(255,108,172,0.78) 100%);
+  backdrop-filter: blur(8px) saturate(1.6);
+  -webkit-backdrop-filter: blur(8px) saturate(1.6);
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 600;
+  border-radius: 12rpx;
+  border: 0.5rpx solid rgba(255,255,255,0.30);
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.45),
+    inset 0 -1rpx 1rpx rgba(20,10,40,0.10),
+    0 0 14rpx rgba(178,140,248,0.20);
+  flex-shrink: 0;
+}
+.ipod-local-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+.ipod-local-empty-text {
+  color: rgba(255,255,255,0.55);
+  font-size: 26rpx;
+}
+.ipod-local-empty-hint {
+  color: rgba(255,255,255,0.38);
+  font-size: 22rpx;
+}
+.ipod-local-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 12rpx;
+  border-bottom: 0.5rpx solid rgba(255,255,255,0.12);
+}
+.ipod-local-item .info {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+}
+.ipod-local-item .name {
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ipod-local-item .size {
+  color: rgba(255,255,255,0.55);
+  font-size: 20rpx;
+}
+.ipod-local-item .delete-btn {
+  color: #d06898;
+  font-size: 24rpx;
+  padding: 0 12rpx;
+  flex-shrink: 0;
+}
+
+/* 滚轮选中高亮 — 液态玻璃浮层 */
+.wheel-highlight {
+  backdrop-filter: blur(18px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.8) !important;
+  background:
+    linear-gradient(175deg,
+      rgba(255,255,255,0.28) 0%,
+      rgba(178,140,248,0.20) 25%,
+      rgba(210,125,205,0.16) 50%,
+      rgba(255,108,172,0.14) 70%,
+      rgba(178,140,248,0.18) 100%) !important;
+  box-shadow:
+    inset 0 1.5rpx 1rpx rgba(255,255,255,0.65),
+    inset 0 -1rpx 1rpx rgba(20,10,40,0.10),
+    0 2rpx 10rpx rgba(178,140,248,0.28),
+    0 0 22rpx rgba(178,140,248,0.20),
+    0 0 10rpx rgba(255,108,172,0.14) !important;
+  border-radius: 10rpx !important;
+  border: 0.5rpx solid rgba(255,255,255,0.30) !important;
+}
+
+/* ===========================================
+   主题切换器 — 7色金属质感
+   =========================================== */
+.theme-switcher {
+  position: relative;
+  margin-top: 16rpx;
+  z-index: 6;
+  display: flex;
+  gap: 12rpx;
+  padding: 8rpx 16rpx;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 28rpx;
+  box-shadow:
+    0 2rpx 8rpx rgba(0,0,0,0.14),
+    inset 0 1rpx 1rpx rgba(255,255,255,0.18);
+}
+.theme-dot {
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+}
+.theme-dot.active {
+  border-color: rgba(0,0,0,0.30);
+  transform: scale(1.15);
+  box-shadow: 0 0 12rpx rgba(0,0,0,0.25), 0 2rpx 4rpx rgba(0,0,0,0.15);
+}
+.theme-dot.silver {
+  background: radial-gradient(circle at 42% 38%, #ffffff 0%, #e8e8ea 40%, #c8cad0 100%);
+  box-shadow: inset 0 1rpx 2rpx rgba(255,255,255,0.70), 0 1rpx 2rpx rgba(0,0,0,0.12);
+}
+.theme-dot.black {
+  background: radial-gradient(circle at 42% 38%, #5a5a60 0%, #2a2a30 50%, #0a0a0c 100%);
+  box-shadow: inset 0 1rpx 2rpx rgba(255,255,255,0.25), 0 1rpx 2rpx rgba(0,0,0,0.20);
+}
+.theme-dot.orange {
+  background: radial-gradient(circle at 42% 38%, #ffb060 0%, #e87010 50%, #882c03 100%);
+  box-shadow: inset 0 1rpx 2rpx rgba(255,200,120,0.60), 0 1rpx 2rpx rgba(0,0,0,0.15);
+}
+.theme-dot.cobalt {
+  background: radial-gradient(circle at 42% 38%, #68b0f8 0%, #0070d8 50%, #002068 100%);
+  box-shadow: inset 0 1rpx 2rpx rgba(120,180,255,0.60), 0 1rpx 2rpx rgba(0,0,0,0.15);
+}
+.theme-dot.taro {
+  background: radial-gradient(circle at 42% 38%, #c8b0e8 0%, #8868c8 50%, #2c2068 100%);
+  box-shadow: inset 0 1rpx 2rpx rgba(200,170,250,0.60), 0 1rpx 2rpx rgba(0,0,0,0.15);
+}
+.theme-dot.pink {
+  background: radial-gradient(circle at 42% 38%, #ffc0d4 0%, #f090b0 50%, #803c60 100%);
+  box-shadow: inset 0 1rpx 2rpx rgba(255,180,200,0.60), 0 1rpx 2rpx rgba(0,0,0,0.15);
+}
+.theme-dot.citrus {
+  background: radial-gradient(circle at 42% 38%, #ffe888 0%, #e0c010 50%, #505001 100%);
+  box-shadow: inset 0 1rpx 2rpx rgba(255,230,120,0.60), 0 1rpx 2rpx rgba(0,0,0,0.15);
+}
+
+/* ===========================================
+   TY Pod 角标 — 液态玻璃胶囊
+   =========================================== */
+.ipod-screen-badge {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 4rpx 0;
+}
+.ipod-screen-badge-text {
+  color: #FFF8C0;
+  font-size: 30rpx;
+  font-weight: 400;
+  font-family: "Snell Roundhand", "Apple Chancery", "Zapfino", "Brush Script MT", cursive;
+  font-style: italic;
+  letter-spacing: 1rpx;
+  text-shadow:
+    0 1rpx 0 rgba(0,0,0,0.85),
+    0 -1rpx 0 rgba(0,0,0,0.85),
+    1rpx 0 0 rgba(0,0,0,0.85),
+    -1rpx 0 0 rgba(0,0,0,0.85),
+    0 0 12rpx rgba(255,248,190,0.70),
+    0 0 24rpx rgba(255,225,100,0.35);
+}
+
+/* ===========================================
+   ⭐ 霓虹色块实时流动动画 — 熔岩灯效果
+   =========================================== */
+
+/* ① 紫蓝色块 — 大范围橢圆漂移 + 呼吸缩放，8s 周期 */
+@keyframes blobDriftPurple {
+  0%, 100% {
+    opacity: 0.65;
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    opacity: 0.95;
+    transform: translate(18%, -14%) scale(1.30);
+  }
+  40% {
+    opacity: 0.50;
+    transform: translate(-10%, 16%) scale(0.82);
+  }
+  60% {
+    opacity: 0.88;
+    transform: translate(-16%, 6%) scale(1.18);
+  }
+  80% {
+    opacity: 0.72;
+    transform: translate(8%, -8%) scale(1.08);
+  }
+}
+
+/* ② 粉色色块 — 反向大范围漂移 + 交错呼吸，10s 周期 */
+@keyframes blobDriftPink {
+  0%, 100% {
+    opacity: 0.60;
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    opacity: 0.92;
+    transform: translate(-20%, 12%) scale(1.28);
+  }
+  50% {
+    opacity: 0.45;
+    transform: translate(12%, -18%) scale(0.78);
+  }
+  75% {
+    opacity: 0.85;
+    transform: translate(-8%, 6%) scale(1.15);
+  }
+}
+
+/* ③ 琥珀色块 — 斜向漂移 + 呼吸缩放，12s 周期 */
+@keyframes blobDriftAmber {
+  0%, 100% {
+    opacity: 0.55;
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    opacity: 0.80;
+    transform: translate(-14%, -10%) scale(1.22);
+  }
+  40% {
+    opacity: 0.40;
+    transform: translate(16%, 14%) scale(0.85);
+  }
+  60% {
+    opacity: 0.72;
+    transform: translate(10%, -16%) scale(1.12);
+  }
+  80% {
+    opacity: 0.50;
+    transform: translate(-12%, 8%) scale(0.95);
+  }
+}
+
+/* ③ 屏幕边缘棱角色散呼吸，7s 周期 */
+@keyframes edgeBreathe {
+  0%, 100% { opacity: 0.78; }
+  35%      { opacity: 1.0; }
+  65%      { opacity: 0.60; }
+}

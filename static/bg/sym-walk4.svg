@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none">
+  <!-- Keith Haring dancing/skipping figure - blue -->
+  <circle cx="50" cy="18" r="12" fill="#2266ff" stroke="#000" stroke-width="4"/>
+  <!-- torso -->
+  <path d="M40 30 Q50 27 60 30 L62 58 Q50 62 38 58 Z" fill="#2266ff" stroke="#000" stroke-width="4" stroke-linejoin="round"/>
+  <!-- both arms up (jumping pose) -->
+  <path d="M42 32 L25 15 L20 8" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M20 8 L17 5 L22 4 Z" fill="#2266ff" stroke="#000" stroke-width="3"/>
+  <path d="M58 32 L75 15 L80 8" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M80 8 L83 5 L78 4 Z" fill="#2266ff" stroke="#000" stroke-width="3"/>
+  <!-- one leg up (skip pose) -->
+  <path d="M46 58 L40 75 L35 85" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M35 85 L31 88 L35 90 Z" fill="#2266ff" stroke="#000" stroke-width="3"/>
+  <!-- other leg extended back -->
+  <path d="M54 58 L68 70 L78 80" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M78 80 L82 82 L76 84 Z" fill="#2266ff" stroke="#000" stroke-width="3"/>
+  <!-- energy burst -->
+  <path d="M8 60 L16 58 M6 68 L14 68 M10 50 L18 50" stroke="#000" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+</svg>

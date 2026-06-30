@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" fill="none">
+  <!-- Keith Haring running dog - green -->
+  <!-- body -->
+  <path d="M30 45 Q50 35 75 40 L85 50 Q80 62 65 65 L40 62 Q28 58 30 45 Z" fill="#00c864" stroke="#000" stroke-width="4" stroke-linejoin="round"/>
+  <!-- head -->
+  <ellipse cx="85" cy="35" rx="15" ry="13" fill="#00c864" stroke="#000" stroke-width="4"/>
+  <!-- ear -->
+  <path d="M82 22 L78 12 L88 18 Z" fill="#00c864" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+  <!-- eye -->
+  <circle cx="89" cy="33" r="2.5" fill="#000"/>
+  <!-- snout -->
+  <path d="M96 38 L104 40 L96 44 Z" fill="#00c864" stroke="#000" stroke-width="3"/>
+  <!-- tail (up, wagging) -->
+  <path d="M30 45 L15 25 L20 20" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M20 20 L24 16 L16 18 Z" fill="#00c864" stroke="#000" stroke-width="3"/>
+  <!-- front legs (running stride) -->
+  <path d="M68 62 L78 80 L82 92" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M82 92 L85 95 L78 95 Z" fill="#00c864" stroke="#000" stroke-width="3"/>
+  <path d="M58 62 L52 80 L48 90" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M48 90 L45 93 L52 93 Z" fill="#00c864" stroke="#000" stroke-width="3"/>
+  <!-- back legs -->
+  <path d="M40 62 L32 80 L28 92" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M28 92 L25 95 L32 95 Z" fill="#00c864" stroke="#000" stroke-width="3"/>
+  <path d="M35 62 L42 78 L46 88" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M46 88 L49 91 L42 91 Z" fill="#00c864" stroke="#000" stroke-width="3"/>
+  <!-- bark marks -->
+  <path d="M105 25 L112 22 M105 30 L113 30 M105 35 L112 38" stroke="#000" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+</svg>
