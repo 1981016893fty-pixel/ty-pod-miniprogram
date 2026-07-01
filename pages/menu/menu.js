@@ -222,60 +222,51 @@ Page({
   },
 
   /* ============ CoverFlow 数据 ============ */
+  // 按【艺人】分组，每张卡片代表一个艺人
+  // 点进去搜索该艺人的全部歌曲（GD Studio API 每首歌都是单曲，按艺人才有意义）
   _updateCoverFlow() {
     const { playlist, favorites } = this.data
 
-    // 1. 从热门歌单中按专辑聚合（每个专辑取第一首封面 + picId）
-    const albumMap = new Map()
+    // 1. 从热门歌单中按艺人聚合
+    const artistMap = new Map()
     for (const s of playlist) {
-      const key = s.album || s.name
-      if (!albumMap.has(key)) {
-        albumMap.set(key, {
-          id: 'pl_' + key,
+      const key = s.artist || '未知艺人'
+      if (!artistMap.has(key)) {
+        artistMap.set(key, {
+          id: 'artist_' + key,
           name: key,
-          artist: s.artist,
+          artist: key,
           cover: s.cover || '/static/default-cover.png',
-          source: 'playlist',
+          source: 'artist',
           songs: [],
-          picId: s.picId || '',       // 同一专辑 picId 相同
-          albumId: s.albumId || '',    // 网易专辑ID
+          picId: s.picId || '',
         })
       }
-      albumMap.get(key).songs.push(s)
+      artistMap.get(key).songs.push(s)
     }
-    const playlistAlbums = Array.from(albumMap.values())
 
-    // 2. 从收藏中提取唯一专辑
-    const favAlbums = []
-    const seen = new Set()
+    // 2. 收藏中的艺人（合并到同名艺人卡片）
     for (const f of favorites) {
-      const key = f.album || f.name
-      if (!seen.has(key)) {
-        seen.add(key)
-        // 在 playlist 中找同专辑歌曲，获取 picId/albumId
-        const relatedSongs = playlist.filter(s => (s.album || s.name) === key)
-        const sample = relatedSongs[0] || f
-        favAlbums.push({
-          id: 'fav_' + (f.id || key),
-          name: f.album || f.name,
-          artist: f.artist,
+      const key = f.artist || '未知艺人'
+      if (!artistMap.has(key)) {
+        artistMap.set(key, {
+          id: 'fav_artist_' + key,
+          name: key,
+          artist: key,
           cover: f.cover || '/static/default-cover.png',
-          source: 'fav',
-          songs: relatedSongs.length > 0 ? relatedSongs : [{
-            id: f.id, name: f.name, artist: f.artist, cover: f.cover, album: f.album || f.name, url: ''
-          }],
-          picId: sample.picId || '',
-          albumId: sample.albumId || '',
+          source: 'fav_artist',
+          songs: [f],
+          picId: f.picId || '',
         })
+      } else {
+        const entry = artistMap.get(key)
+        // 如果收藏歌曲不在 songs 里，补充进去
+        const exists = entry.songs.find(s => s.id === f.id)
+        if (!exists) entry.songs.push(f)
       }
     }
 
-    // 合并：收藏专辑优先，再加热门专辑（去重）
-    const favKeys = new Set(favAlbums.map(a => a.name))
-    const combined = [
-      ...favAlbums,
-      ...playlistAlbums.filter(a => !favKeys.has(a.name)),
-    ]
+    const combined = Array.from(artistMap.values())
     this.setData({ coverFlowData: combined })
   },
 
@@ -689,12 +680,13 @@ Page({
     }
   },
 
+  // 点击 Cover Flow 卡片：按艺人加载全部歌曲
   _openAlbum(album) {
     if (!album) return
     const BASE = 'https://ty-music.onrender.com'
     const that = this
 
-    // 先显示已有歌曲（加载提示）
+    // 先显示本地已有歌曲（立即展示）
     this.setData({
       albumSongs: album.songs || [],
       albumName: album.name,
@@ -703,22 +695,14 @@ Page({
     })
     this._pushView('albumsongs')
     wx.vibrateShort({ type: 'medium' }).catch(() => {})
+    wx.showLoading({ title: '加载全部歌曲...' })
 
-    // 优先用 albumId 调 /api/album?id=xxx（网易官方接口，返回整张专辑）
-    // 其次用专辑名+艺人名调 /api/music/album（搜索方案，后端会自动精确匹配专辑ID）
-    const albumId = album.albumId || ''
-
-    let url
-    if (albumId) {
-      url = BASE + '/api/album?id=' + encodeURIComponent(albumId)
-    } else {
-      // 用专辑名+艺人名搜索（后端会先搜索albumId再获取完整歌曲列表）
-      url = BASE + '/api/music/album?album=' + encodeURIComponent(album.name) +
-            '&artist=' + encodeURIComponent(album.artist || '') + '&limit=100'
-    }
-
-    console.log('[Album] Fetching:', url)
-    wx.showLoading({ title: '加载专辑全部歌曲...' })
+    // 调用艺人歌曲接口（返回该艺人的全部歌曲，最多100首）
+    // 清理艺人名：去除下划线后面的英文别名（如 "马也_Crabbit" → "马也"）
+    const rawArtist = album.artist || album.name
+    const artistName = rawArtist.split(/[,、_]/)[0].trim()
+    const url = BASE + '/api/music/artist?name=' + encodeURIComponent(artistName) + '&limit=100'
+    console.log('[Artist] Fetching:', url, '| artist:', artistName)
 
     wx.request({
       url: url,
@@ -732,26 +716,19 @@ Page({
             albumName: album.name,
             albumCover: album.cover || '/static/default-cover.png',
           })
-          console.log('[Album] Loaded', songs.length, 'songs for', album.name)
-          wx.showToast({ title: '已加载 ' + songs.length + ' 首', icon: 'none', duration: 1000 })
+          wx.showToast({ title: '共 ' + songs.length + ' 首', icon: 'none', duration: 1200 })
+          console.log('[Artist] Loaded', songs.length, 'songs for', album.artist)
         } else {
-          console.log('[Album] Empty response, status:', res.statusCode, 'data:', res.data)
-          wx.hideLoading()
-          // 后端没返回数据，保持原有歌曲列表
+          // 接口失败，保持本地歌曲列表
           const localSongs = album.songs || []
-          if (localSongs.length > 0) {
-            wx.showToast({ title: '仅显示 ' + localSongs.length + ' 首（热门）', icon: 'none', duration: 1500 })
-          }
+          wx.showToast({ title: '共 ' + localSongs.length + ' 首', icon: 'none', duration: 1000 })
         }
       },
       fail(err) {
         wx.hideLoading()
-        console.log('[Album] Fetch failed:', err.message || err)
-        // 保持原有歌曲列表
+        console.log('[Artist] Fetch failed:', err.message || err)
         const localSongs = album.songs || []
-        if (localSongs.length > 0) {
-          wx.showToast({ title: '网络错误，显示 ' + localSongs.length + ' 首', icon: 'none', duration: 1500 })
-        }
+        wx.showToast({ title: '共 ' + localSongs.length + ' 首（离线）', icon: 'none', duration: 1000 })
       }
     })
   },
