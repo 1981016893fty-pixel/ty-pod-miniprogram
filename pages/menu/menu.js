@@ -225,7 +225,7 @@ Page({
   _updateCoverFlow() {
     const { playlist, favorites } = this.data
 
-    // 1. 从热门歌单中按专辑聚合（每个专辑取第一首封面）
+    // 1. 从热门歌单中按专辑聚合（每个专辑取第一首封面 + picId）
     const albumMap = new Map()
     for (const s of playlist) {
       const key = s.album || s.name
@@ -237,6 +237,8 @@ Page({
           cover: s.cover || '/static/default-cover.png',
           source: 'playlist',
           songs: [],
+          picId: s.picId || '',       // 同一专辑 picId 相同
+          albumId: s.albumId || '',    // 网易专辑ID
         })
       }
       albumMap.get(key).songs.push(s)
@@ -250,8 +252,9 @@ Page({
       const key = f.album || f.name
       if (!seen.has(key)) {
         seen.add(key)
-        // 在 playlist 中找同专辑歌曲
+        // 在 playlist 中找同专辑歌曲，获取 picId/albumId
         const relatedSongs = playlist.filter(s => (s.album || s.name) === key)
+        const sample = relatedSongs[0] || f
         favAlbums.push({
           id: 'fav_' + (f.id || key),
           name: f.album || f.name,
@@ -261,6 +264,8 @@ Page({
           songs: relatedSongs.length > 0 ? relatedSongs : [{
             id: f.id, name: f.name, artist: f.artist, cover: f.cover, album: f.album || f.name, url: ''
           }],
+          picId: sample.picId || '',
+          albumId: sample.albumId || '',
         })
       }
     }
@@ -311,14 +316,16 @@ Page({
 
   _norm(s) {
     return {
-      id:     s.id || s.songId || '',
-      name:   s.name || s.title || '未知歌曲',
-      artist: s.artist || (s.ar?.[0]?.name) || '未知艺人',
-      cover:  s.cover
-                ? (/^https?:\/\//.test(s.cover) ? s.cover : 'https://ty-music.onrender.com' + s.cover)
-                : (s.al?.picUrl || '/static/default-cover.png'),
-      album:  s.album || (s.al?.name) || '',
-      url:    s.url || s.mp3url || '',
+      id:       s.id || s.songId || '',
+      name:     s.name || s.title || '未知歌曲',
+      artist:   s.artist || (s.ar?.[0]?.name) || '未知艺人',
+      cover:    s.cover
+                  ? (/^https?:\/\//.test(s.cover) ? s.cover : 'https://ty-music.onrender.com' + s.cover)
+                  : (s.al?.picUrl || '/static/default-cover.png'),
+      album:    s.album || (s.al?.name) || '',
+      albumId:  String(s.al?.id || s.albumId || ''),   // 网易专辑ID
+      picId:    String(s.pic_id || s.picId || ''),      // 封面图片ID（同一专辑相同）
+      url:      s.url || s.mp3url || '',
     }
   },
 
@@ -684,15 +691,72 @@ Page({
 
   _openAlbum(album) {
     if (!album) return
-    const songs = album.songs || []
+    const BASE = 'https://ty-music.onrender.com'
+    const that = this
+
+    // 先显示已有歌曲（加载提示）
     this.setData({
-      albumSongs: songs,
+      albumSongs: album.songs || [],
       albumName: album.name,
       albumCover: album.cover || '/static/default-cover.png',
       menuIndex: 0,
     })
     this._pushView('albumsongs')
     wx.vibrateShort({ type: 'medium' }).catch(() => {})
+
+    // 优先用 albumId 调 /api/album?id=xxx（网易官方接口，返回整张专辑）
+    const albumId = album.albumId || ''
+    const picId   = album.picId || ''
+
+    let url
+    if (albumId) {
+      url = BASE + '/api/album?id=' + encodeURIComponent(albumId)
+    } else if (picId) {
+      // 没有 albumId，用 picId 调 /api/music/album（搜索+过滤，可能不完整但比只有热门歌好）
+      url = BASE + '/api/music/album?picId=' + encodeURIComponent(picId) + '&limit=100'
+    } else {
+      // 都没有，用专辑名搜索
+      url = BASE + '/api/album/search?name=' + encodeURIComponent(album.name) +
+            '&artist=' + encodeURIComponent(album.artist || '') + '&limit=100'
+    }
+
+    console.log('[Album] Fetching:', url)
+    wx.showLoading({ title: '加载专辑全部歌曲...' })
+
+    wx.request({
+      url: url,
+      timeout: 20000,
+      success(res) {
+        wx.hideLoading()
+        if (res.statusCode === 200 && res.data?.songs?.length > 0) {
+          const songs = res.data.songs.map(s => that._norm(s))
+          that.setData({
+            albumSongs: songs,
+            albumName: album.name,
+            albumCover: album.cover || '/static/default-cover.png',
+          })
+          console.log('[Album] Loaded', songs.length, 'songs for', album.name)
+          wx.showToast({ title: '已加载 ' + songs.length + ' 首', icon: 'none', duration: 1000 })
+        } else {
+          console.log('[Album] Empty response, status:', res.statusCode, 'data:', res.data)
+          wx.hideLoading()
+          // 后端没返回数据，保持原有歌曲列表
+          const localSongs = album.songs || []
+          if (localSongs.length > 0) {
+            wx.showToast({ title: '仅显示 ' + localSongs.length + ' 首（热门）', icon: 'none', duration: 1500 })
+          }
+        }
+      },
+      fail(err) {
+        wx.hideLoading()
+        console.log('[Album] Fetch failed:', err.message || err)
+        // 保持原有歌曲列表
+        const localSongs = album.songs || []
+        if (localSongs.length > 0) {
+          wx.showToast({ title: '网络错误，显示 ' + localSongs.length + ' 首', icon: 'none', duration: 1500 })
+        }
+      }
+    })
   },
 
   onAlbumSongTap(e) {
