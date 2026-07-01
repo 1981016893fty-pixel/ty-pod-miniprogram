@@ -266,6 +266,7 @@
           <view class="ipod-coverflow-label" wx:if="{{coverFlowData[cfActiveIdx]}}">
             <text class="title">{{coverFlowData[cfActiveIdx].name}}</text>
             <text class="artist">{{coverFlowData[cfActiveIdx].artist}}</text>
+            <text class="cf-tap-hint">tap again to view songs</text>
           </view>
           <view class="ipod-search-empty" wx:if="{{coverFlowData.length === 0}}">
             <view class="ipod-search-empty-icon"></view>
@@ -274,8 +275,37 @@
           </view>
         </block>
 
-        <!-- ===== 设置 ===== -->
-        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'settings'}}">
+        <!-- ===== 专辑歌曲列表 ===== -->
+        <block wx:if="{{currentView === 'albumsongs'}}">
+          <!-- 专辑头部信息 -->
+          <view class="album-header">
+            <image class="album-header-cover" src="{{albumCover}}" mode="aspectFill"/>
+            <view class="album-header-info">
+              <text class="album-header-name">{{albumName}}</text>
+              <text class="album-header-count">{{albumSongs.length}} songs</text>
+            </view>
+          </view>
+          <!-- 歌曲列表 -->
+          <scroll-view class="ipod-menu album-songs-list" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}">
+            <view id="asi-{{index}}"
+              class="ipod-album-song-item {{menuIndex === index ? 'wheel-highlight' : ''}} {{currentSong && currentSong.id === item.id ? 'playing' : ''}}"
+              wx:for="{{albumSongs}}" wx:key="id" wx:for-index="index"
+              bindtap="onAlbumSongTap" data-idx="{{index}}">
+              <text class="album-song-num">{{index + 1}}</text>
+              <view class="album-song-info">
+                <text class="album-song-name">{{item.name}}</text>
+                <text class="album-song-artist">{{item.artist}}</text>
+              </view>
+              <view class="album-song-playing-dot" wx:if="{{currentSong && currentSong.id === item.id && playing}}"></view>
+              <text class="arrow" wx:else>›</text>
+            </view>
+            <view class="album-songs-empty" wx:if="{{albumSongs.length === 0}}">
+              <text>暂无歌曲</text>
+            </view>
+          </scroll-view>
+        </block>
+
+        <!-- ===== 设置 ===== -->        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'settings'}}">
           <view id="seti-0" class="ipod-setting-item {{settingsIndex === 0 ? 'active' : ''}}" bindtap="onPlayModeSwitch">
             <text class="label">播放模式</text>
             <text class="value">{{playModeLabel}}</text>

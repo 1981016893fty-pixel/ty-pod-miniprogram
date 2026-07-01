@@ -9,6 +9,7 @@ const VIEW_TITLES = {
   hot:         'Hot Picks',
   nowplaying:  'Now Playing',
   coverflow:   'Cover Flow',
+  albumsongs:  'Album',
   settings:    'Settings',
 }
 
@@ -57,6 +58,11 @@ Page({
     /* ——— CoverFlow ——— */
     cfActiveIdx: 0,
     coverFlowData: [],
+
+    /* ——— 专辑歌曲列表 ——— */
+    albumSongs: [],
+    albumName: '',
+    albumCover: '',
 
     /* ——— 收藏 ——— */
     favorites: [],
@@ -218,24 +224,54 @@ Page({
   /* ============ CoverFlow 数据 ============ */
   _updateCoverFlow() {
     const { playlist, favorites } = this.data
-    // 从收藏中提取唯一专辑条目
+
+    // 1. 从热门歌单中按专辑聚合（每个专辑取第一首封面）
+    const albumMap = new Map()
+    for (const s of playlist) {
+      const key = s.album || s.name
+      if (!albumMap.has(key)) {
+        albumMap.set(key, {
+          id: 'pl_' + key,
+          name: key,
+          artist: s.artist,
+          cover: s.cover || '/static/default-cover.png',
+          source: 'playlist',
+          songs: [],
+        })
+      }
+      albumMap.get(key).songs.push(s)
+    }
+    const playlistAlbums = Array.from(albumMap.values())
+
+    // 2. 从收藏中提取唯一专辑
     const favAlbums = []
     const seen = new Set()
     for (const f of favorites) {
       const key = f.album || f.name
       if (!seen.has(key)) {
         seen.add(key)
+        // 在 playlist 中找同专辑歌曲
+        const relatedSongs = playlist.filter(s => (s.album || s.name) === key)
         favAlbums.push({
           id: 'fav_' + (f.id || key),
           name: f.album || f.name,
           artist: f.artist,
           cover: f.cover || '/static/default-cover.png',
           source: 'fav',
+          songs: relatedSongs.length > 0 ? relatedSongs : [{
+            id: f.id, name: f.name, artist: f.artist, cover: f.cover, album: f.album || f.name, url: ''
+          }],
         })
       }
     }
-    // 只显示收藏歌曲对应的专辑
-    this.setData({ coverFlowData: favAlbums })
+
+    // 合并：收藏专辑优先，再加热门专辑（去重）
+    const favKeys = new Set(favAlbums.map(a => a.name))
+    const combined = [
+      ...favAlbums,
+      ...playlistAlbums.filter(a => !favKeys.has(a.name)),
+    ]
+    this.setData({ coverFlowData: combined })
   },
 
   /* ============ 热门歌单 ============ */
@@ -636,8 +672,33 @@ Page({
   },
   onCFTouchEnd() { this._cfStart = null; this._cfAccum = 0 },
   onCFTap(e) {
-    this.setData({ cfActiveIdx: +e.currentTarget.dataset.idx })
-    wx.vibrateShort({ type: 'light' }).catch(() => {})
+    const idx = +e.currentTarget.dataset.idx
+    if (idx === this.data.cfActiveIdx) {
+      // 再次点击已选中专辑 → 进入歌曲列表
+      this._openAlbum(this.data.coverFlowData[idx])
+    } else {
+      this.setData({ cfActiveIdx: idx })
+      wx.vibrateShort({ type: 'light' }).catch(() => {})
+    }
+  },
+
+  _openAlbum(album) {
+    if (!album) return
+    const songs = album.songs || []
+    this.setData({
+      albumSongs: songs,
+      albumName: album.name,
+      albumCover: album.cover || '/static/default-cover.png',
+      menuIndex: 0,
+    })
+    this._pushView('albumsongs')
+    wx.vibrateShort({ type: 'medium' }).catch(() => {})
+  },
+
+  onAlbumSongTap(e) {
+    const idx = +e.currentTarget.dataset.idx
+    const song = this.data.albumSongs[idx]
+    if (song) this._play(song)
   },
 
   /* ============ 滚轮 ============ */
@@ -646,7 +707,7 @@ Page({
   },
 
   _scrollTarget(view, idx) {
-    const m = { menu: 'mi', onlinemusic: 'omi', search: 'si', hot: 'hi', localmusic: 'li', settings: 'seti' }
+    const m = { menu: 'mi', onlinemusic: 'omi', search: 'si', hot: 'hi', localmusic: 'li', settings: 'seti', albumsongs: 'asi' }
     const p = m[view]; return p ? (p + '-' + idx) : ''
   },
 
@@ -689,6 +750,10 @@ Page({
       this._audio.seek(Math.max(0, Math.min(this.data.duration, (this._audio.currentTime || 0) + steps * 2)))
     else if (currentView === 'coverflow')
       this.setData({ cfActiveIdx: Math.max(0, Math.min(this.data.coverFlowData.length - 1, this.data.cfActiveIdx + steps)) })
+    else if (currentView === 'albumsongs' && this.data.albumSongs.length > 0) {
+      const n = ((menuIndex + steps) % this.data.albumSongs.length + this.data.albumSongs.length) % this.data.albumSongs.length
+      this.setData({ menuIndex: n, wheelScrollTarget: this._scrollTarget('albumsongs', n) })
+    }
   },
 
   onWheelTouchEnd() { this._wStart = null; this._wAccum = 0; this._wLastStep = 0 },
@@ -724,15 +789,10 @@ Page({
     else if (currentView === 'nowplaying')
       this.onTogglePlay()
     else if (currentView === 'coverflow' && this.data.coverFlowData[cfActiveIdx]) {
-      const item = this.data.coverFlowData[cfActiveIdx]
-      if (item.source === 'fav') {
-        // 收藏专辑 — 找到 playlist 中匹配的歌曲播放
-        const match = this.data.playlist.find(s => (s.album || s.name) === item.name)
-        if (match) this._play(match)
-      } else {
-        // 热门歌单条目 — 直接播放
-        this._play(item)
-      }
+      this._openAlbum(this.data.coverFlowData[cfActiveIdx])
+    }
+    else if (currentView === 'albumsongs' && this.data.albumSongs[menuIndex]) {
+      this._play(this.data.albumSongs[menuIndex])
     }
   },
 
