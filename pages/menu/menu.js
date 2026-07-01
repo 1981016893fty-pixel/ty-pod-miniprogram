@@ -705,18 +705,15 @@ Page({
     wx.vibrateShort({ type: 'medium' }).catch(() => {})
 
     // 优先用 albumId 调 /api/album?id=xxx（网易官方接口，返回整张专辑）
+    // 其次用专辑名+艺人名调 /api/music/album（搜索方案，后端会自动精确匹配专辑ID）
     const albumId = album.albumId || ''
-    const picId   = album.picId || ''
 
     let url
     if (albumId) {
       url = BASE + '/api/album?id=' + encodeURIComponent(albumId)
-    } else if (picId) {
-      // 没有 albumId，用 picId 调 /api/music/album（搜索+过滤，可能不完整但比只有热门歌好）
-      url = BASE + '/api/music/album?picId=' + encodeURIComponent(picId) + '&limit=100'
     } else {
-      // 都没有，用专辑名搜索
-      url = BASE + '/api/album/search?name=' + encodeURIComponent(album.name) +
+      // 用专辑名+艺人名搜索（后端会先搜索albumId再获取完整歌曲列表）
+      url = BASE + '/api/music/album?album=' + encodeURIComponent(album.name) +
             '&artist=' + encodeURIComponent(album.artist || '') + '&limit=100'
     }
 
