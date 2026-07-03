@@ -140,14 +140,14 @@
         <block wx:if="{{currentView === 'search'}}">
           <view class="ipod-search-box">
             <input placeholder="搜索歌曲，艺人..." placeholder-style="color:rgba(42,42,53,0.55);font-size:22rpx"
-              value="{{searchKeyword}}" bindinput="onSearchInput" bindconfirm="onSearch" confirm-type="search" focus="{{true}}"/>
+              value="{{searchKeyword}}" bindinput="onSearchInput" bindconfirm="onSearch" confirm-type="search" focus="{{searchInputFocus}}" bindfocus="onSearchFocus"/>
             <view class="ipod-search-btn" bindtap="onSearch">搜</view>
           </view>
 
           <!-- 搜索结果 -->
           <scroll-view class="ipod-menu" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:if="{{searchResults.length > 0}}">
             <view id="si-{{index}}" class="ipod-search-item {{menuIndex === index ? 'wheel-highlight' : ''}}" wx:for="{{searchResults}}" wx:key="id" bindtap="onPlaySearchSong" data-idx="{{index}}">
-              <image class="search-result-cover" src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+              <image class="search-result-cover" src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill" lazy-load="{{true}}"/>
               <view class="info">
                 <text class="name">{{item.name}}</text>
                 <text class="artist">{{item.artist}}</text>
@@ -210,7 +210,7 @@
         <scroll-view class="ipod-menu" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:if="{{currentView === 'hot'}}">
           <view id="hi-{{index}}" class="ipod-hot-item {{menuIndex === index ? 'wheel-highlight' : ''}}" wx:for="{{playlist}}" wx:key="id" bindtap="onPlayFromList" data-idx="{{index}}">
             <text class="hot-rank rank-{{index + 1}}">{{index + 1}}</text>
-            <image class="hot-cover" src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+            <image class="hot-cover" src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill" lazy-load="{{true}}"/>
             <view class="info">
               <text class="name">{{item.name}}</text>
               <text class="artist">{{item.artist}}</text>
@@ -371,7 +371,7 @@
                   <!-- 正面：封面 -->
                   <view class="ipod-coverflow-front">
                     <view class="ipod-coverflow-cover">
-                      <image src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+                      <image src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill" lazy-load="{{true}}"/>
                     </view>
                   </view>
                   <!-- 背面：专辑信息 -->
@@ -386,7 +386,7 @@
                 </view>
                 <!-- 镜像倒影（不参与翻转） -->
                 <view class="ipod-coverflow-reflection">
-                  <image src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+                  <image src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill" lazy-load="{{true}}"/>
                   <view class="ipod-coverflow-reflection-mask"></view>
                 </view>
               </view>
@@ -581,7 +581,7 @@
         <!-- 左侧：专辑封面 2.5D -->
         <view class="full-lyric-album-side">
           <view class="full-lyric-album-3d">
-            <image class="full-lyric-album-cover" src="{{playSong.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+            <image class="full-lyric-album-cover" src="{{playSong.cover || '/static/default-cover.png'}}" mode="aspectFill" lazy-load="{{true}}"/>
             <view class="full-lyric-album-glow"></view>
           </view>
           <view class="full-lyric-album-reflection"></view>

@@ -131,6 +131,8 @@ Page({
     // 搜索缓存（最多 20 条，避免重复请求唤醒 render.com）
     this._searchCache = new Map()
     this._searchCacheMax = 20
+    // 恢复磁盘缓存（搜过的关键词下次直接秒开，不走网络）
+    this._restoreSearchCache()
     // 搜索防抖定时器
     this._searchDebounce = null
     this._restoreState()
@@ -564,6 +566,10 @@ Page({
   onBack() {
     const stack = [...this.data.viewStack]
     if (stack.length <= 1) return
+    // 离开搜索页：让 input 失焦，避免占键盘
+    if (this.data.currentView === 'search') {
+      this.setData({ searchInputFocus: false })
+    }
     // CoverFlow 退出 → 消散动画（无论是否正在进入动画都允许退出）
     if (stack[stack.length - 1] === 'coverflow') {
       this._endInkTransition()
@@ -1262,6 +1268,15 @@ Page({
   onSubMenuTap(e) {
     const idx = +e.currentTarget.dataset.idx
     this.setData({ subMenuIndex: idx })
+    if (idx === 0) {
+      // 进入搜索页：缓存有结果就秒显示，不显示空状态
+      const lastKw = (this.data.searchKeyword || '').trim()
+      const cached = lastKw && this._searchCache.get(lastKw)
+      this.setData({
+        searchInputFocus: true,
+        searchResults: cached || [],
+      })
+    }
     this._pushView(idx === 0 ? 'search' : 'hot')
   },
 
@@ -1418,6 +1433,23 @@ Page({
     this.setData({ searchHistory: [] })
     this._saveSearchHistory([])
   },
+  /* 搜索结果磁盘缓存 — 小程序关闭/杀掉后再次打开秒开 */
+  _persistSearchCache() {
+    try {
+      const obj = Object.fromEntries(this._searchCache)
+      wx.setStorageSync('typod_search_cache', obj)
+    } catch (e) { /* 存储满了就跳过，下次启动再补 */ }
+  },
+  _restoreSearchCache() {
+    try {
+      const raw = wx.getStorageSync('typod_search_cache')
+      if (raw && typeof raw === 'object') {
+        // 限制 20 条上限，保护启动性能
+        const entries = Object.entries(raw).slice(0, this._searchCacheMax)
+        this._searchCache = new Map(entries)
+      }
+    } catch (e) { /* 损坏的缓存忽略即可 */ }
+  },
   // 点击历史/热门项 → 直接搜索
   onSearchKeywordTap(e) {
     const kw = (e.currentTarget.dataset.kw || '').trim()
@@ -1467,6 +1499,7 @@ Page({
               this._searchCache.delete(firstKey)
             }
             this._searchCache.set(kw, normed)
+            this._persistSearchCache()
             this.setData({ searchResults: normed, searchLoading: false })
             // 记录到搜索历史
             this._addSearchHistory(kw)
