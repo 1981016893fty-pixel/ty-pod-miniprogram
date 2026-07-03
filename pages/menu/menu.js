@@ -357,13 +357,13 @@ Page({
       favs.splice(existIdx, 1)
       wx.showToast({ title: '已取消收藏', icon: 'none', duration: 800 })
     } else {
-      // 构造收藏对象，确保 albumId 不为空
+      // 构造收藏对象，确保 albumId/picId 不为空
       const fav = {
         id: song.id,
         name: song.name,
         artist: song.artist,
         cover: song.cover,
-        album: song.album || song.name,
+        album: song.album || '',                    // 不再用歌名兜底，保持空串让 _updateCoverFlow 处理
         albumId: song.albumId || song.picId || '',
         picId: song.picId || '',
       }
@@ -371,8 +371,8 @@ Page({
       wx.showToast({ title: '已收藏', icon: 'none', duration: 800 })
       wx.vibrateShort({ type: 'medium' }).catch(() => {})
 
-      // 如果 albumId 为空，用专辑名查一次正确 albumId
-      if (!fav.albumId && fav.album && fav.album !== fav.name) {
+      // 如果 picId 和 albumId 都为空，用歌名+艺人查一次（获取 picId 和 album）
+      if (!fav.picId && !fav.albumId) {
         this._fetchAlbumId(fav)
       }
     }
@@ -384,30 +384,35 @@ Page({
     this._updateCoverFlow()
   },
 
-  // 用专辑名查 albumId（调用后端专辑搜索接口）
+  // 用歌名+艺人查 albumId / picId / album 名（补全缺失的专辑信息）
   _fetchAlbumId(fav) {
     const BASE = 'https://ty-music.onrender.com'
-    const query = fav.artist ? `${fav.artist} ${fav.album}` : fav.album
+    const query = fav.artist ? `${fav.artist} ${fav.name}` : fav.name
     wx.request({
-      url: BASE + '/api/album/search',
-      data: { name: fav.album, artist: fav.artist || '' },
+      url: BASE + '/api/music/search',
+      data: { keyword: query, limit: 5 },
       timeout: 10000,
       success: (res) => {
         if (res.statusCode === 200 && res.data?.songs?.length > 0) {
-          // 找到该专辑第一首歌的 picId 作为 albumId
-          const song = res.data.songs[0]
-          const newAlbumId = song.picId || song.albumId || ''
-          if (newAlbumId) {
-            // 更新 favorites 里的 albumId
+          // 找同名歌曲，补全 picId / albumId / album
+          const match = res.data.songs.find(s => s.name === fav.name && s.artist === fav.artist)
+                     || res.data.songs[0]
+          const newPicId = String(match.pic_id || match.picId || '')
+          const newAlbumId = String(match.al?.id || match.albumId || '')
+          const newAlbum = match.al?.name || match.album || ''
+          const updates = {}
+          if (newPicId) updates.picId = newPicId
+          if (newAlbumId) updates.albumId = newAlbumId
+          if (newAlbum && newAlbum !== fav.name) updates.album = newAlbum
+          if (Object.keys(updates).length) {
             const favs = this.data.favorites.map(f => {
-              if (f.id === fav.id) return { ...f, albumId: newAlbumId }
+              if (f.id === fav.id) return { ...f, ...updates }
               return f
             })
             this.setData({ favorites: favs })
             app.globalData.favorites = favs
             wx.setStorageSync('typod_favs', favs)
             this._updateCoverFlow()
-            console.log('[Favorite] Got albumId for', fav.album, ':', newAlbumId)
           }
         }
       },
@@ -417,6 +422,7 @@ Page({
 
   /* ============ CoverFlow 数据 ============ */
   // 仅按【已收藏歌曲】的专辑分组 —— 不收藏就不显示
+  // 分组优先级：picId（封面图ID，同一专辑共享） → albumId → album名 → 单曲
   _updateCoverFlow() {
     const { favorites } = this.data
 
@@ -424,15 +430,35 @@ Page({
 
     for (const s of (favorites || [])) {
       if (!s) continue
-      const key = s.albumId || s.album || s.name || ('song_' + s.id)
+      // picId 是同一专辑的封面图ID，最可靠的分组依据
+      const picId = s.picId || ''
+      const albumId = s.albumId || ''
+      const albumName = s.album || ''
+      // 分组键：picId 优先 → albumId → album名（排除等于歌名的伪专辑） → 单曲兜底
+      let key
+      if (picId) {
+        key = 'pic_' + picId
+      } else if (albumId) {
+        key = 'aid_' + albumId
+      } else if (albumName && albumName !== s.name) {
+        key = 'alb_' + albumName
+      } else {
+        key = 'song_' + s.id
+      }
+
       if (!albumMap.has(key)) {
+        // 封面：有 picId 时拼网易云封面 URL，否则用歌曲自带的 cover
+        let coverUrl = s.cover || '/static/default-cover.png'
+        if (picId) {
+          coverUrl = 'https://p1.music.126.net/' + picId + '/' + picId + '.jpg'
+        }
         albumMap.set(key, {
-          id:       'album_' + key,
-          name:     s.album || s.name,
+          id:       key,
+          name:     (albumName && albumName !== s.name) ? albumName : (s.artist || '未知专辑'),
           artist:   s.artist || '',
-          cover:    s.cover || '/static/default-cover.png',
-          albumId:  s.albumId || '',
-          picId:    s.picId || s.albumId || '',
+          cover:    coverUrl,
+          albumId:  albumId || picId,
+          picId:    picId,
           songs:    [],
         })
       }

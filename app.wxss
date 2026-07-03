@@ -501,7 +501,7 @@ page {
   display: none;
 }
 .ipod-screen-inner.neon-fullscreen .ipod-header {
-  padding: 12rpx 16rpx 14rpx;
+  padding: 4rpx 16rpx 6rpx;
 }
 .ipod-screen-inner.neon-fullscreen .ipod-coverflow {
   background: none;
