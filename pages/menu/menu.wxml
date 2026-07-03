@@ -198,7 +198,6 @@
               </view>
               <view class="ipod-hot-artists">
                 <view class="ipod-hot-artist-tag" wx:for="{{hotArtists}}" wx:key="name" bindtap="onSearchKeywordTap" data-kw="{{item.name}}">
-                  <text class="ipod-hot-artist-emoji">{{item.emoji}}</text>
                   <text class="ipod-hot-artist-name">{{item.name}}</text>
                 </view>
               </view>
