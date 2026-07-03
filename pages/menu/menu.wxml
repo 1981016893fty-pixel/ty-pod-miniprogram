@@ -7,7 +7,45 @@
     }
     return false
   }
-  module.exports = { isFav: isFav }
+  // CoverFlow：根据位置差计算侧面旋转角度
+  // diff=0 → 0°（正面），diff=±1→±56°，diff=±2→±67°，diff≥3→±78°（侧脊）
+  function cfAngle(diff) {
+    if (diff === 0) return 0
+    var sign = diff > 0 ? 1 : -1
+    var abs = diff > 0 ? diff : -diff
+    var angle = 45 + abs * 11
+    if (angle > 78) angle = 78
+    return sign * angle
+  }
+  // CoverFlow：根据位置差返回缩放比例
+  function cfScale(diff) {
+    if (diff === 0) return 1
+    var abs = diff > 0 ? diff : -diff
+    if (abs === 1) return 0.94
+    if (abs === 2) return 0.85
+    return 0.73
+  }
+  // CoverFlow：根据位置差返回 z-index
+  function cfZ(diff) {
+    if (diff === 0) return 100
+    var abs = diff > 0 ? diff : -diff
+    if (abs === 1) return 65
+    if (abs === 2) return 40
+    if (abs === 3) return 20
+    return 5
+  }
+  // CoverFlow：可见范围判断（±4 格以内）
+  function cfVisible(diff) {
+    var abs = diff > 0 ? diff : -diff
+    return abs <= 4
+  }
+  // CoverFlow：transform-origin（左侧项 pivot 右边缘，右侧项 pivot 左边缘）
+  function cfOrigin(diff) {
+    if (diff < 0) return '100% center'
+    if (diff > 0) return '0% center'
+    return 'center center'
+  }
+  module.exports = { isFav: isFav, cfAngle: cfAngle, cfScale: cfScale, cfZ: cfZ, cfVisible: cfVisible, cfOrigin: cfOrigin }
 </wxs>
 <view class="ipod-container">
 
@@ -17,24 +55,31 @@
       class="kh-bg-img {{index === bgIndex ? 'active' : ''}}" mode="aspectFill" />
   </view>
 
+  <!-- ========== 2.5D 地面投影 — 机身与背景表面之间的接触阴影 ========== -->
+  <view class="ground-shadow"></view>
+
   <!-- ========== iPod 机身 ========== -->
   <view class="ipod-body theme-{{bodyColor}}">
 
     <!-- ========== 屏幕 ========== -->
-    <view class="ipod-screen {{backlight ? '' : 'backlight-off'}}">
+    <view class="ipod-screen {{backlight ? '' : 'backlight-off'}} {{bootPhase !== 'plugged' && !backlight ? 'always-on' : ''}}">
       <view class="ipod-screen-inner {{currentView === 'coverflow' ? 'neon-fullscreen' : ''}}">
 
         <!-- 霓虹色块 ③ — 琥珀色流动 -->
         <view class="neon-blob-extra"></view>
+        <!-- 霓虹色块 ④ — 深色霓虹流动 -->
+        <view class="neon-blob-deep"></view>
 
         <!-- 标题栏 -->
         <view class="ipod-header">
           <!-- 左：返回按钮 / TY Pod 角标 -->
-          <text class="ipod-header-back" wx:if="{{viewStack.length > 1}}" bindtap="onBack">←</text>
+          <view class="ipod-header-back-wrap" wx:if="{{viewStack.length > 1}}" bindtap="onBack">
+            <text class="ipod-header-back-arrow">‹</text>
+          </view>
           <view class="ipod-screen-badge" wx:elif="{{currentView === 'menu'}}">
             <text class="ipod-screen-badge-text">TY Pod</text>
           </view>
-          <view wx:else class="ipod-header-back"></view>
+          <view wx:else class="ipod-header-back-placeholder"></view>
           <!-- 中：标题 -->
           <text wx:if="{{currentView !== 'coverflow'}}" class="ipod-header-title">{{viewTitle}}</text>
           <text wx:else class="ipod-header-title"></text>
@@ -46,7 +91,7 @@
         </view>
 
         <!-- ===== 主菜单 ===== -->
-        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'menu'}}">
+        <scroll-view class="ipod-menu" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:if="{{currentView === 'menu'}}">
           <view id="mi-0" class="ipod-menu-item {{menuIndex === 0 ? 'active' : ''}}" bindtap="onMenuTap" data-idx="0">
             <text class="ipod-menu-item-label">在线音乐</text>
             <text class="ipod-menu-item-arrow">›</text>
@@ -68,7 +113,7 @@
         </scroll-view>
 
         <!-- ===== 在线音乐子菜单 ===== -->
-        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'onlinemusic'}}">
+        <scroll-view class="ipod-menu" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:if="{{currentView === 'onlinemusic'}}">
           <view id="omi-0" class="ipod-menu-item {{subMenuIndex === 0 ? 'active' : ''}}" bindtap="onSubMenuTap" data-idx="0">
             <text class="ipod-menu-item-label">搜索歌曲</text>
             <text class="ipod-menu-item-arrow">›</text>
@@ -82,13 +127,13 @@
         <!-- ===== 搜索 ===== -->
         <block wx:if="{{currentView === 'search'}}">
           <view class="ipod-search-box">
-            <input placeholder="搜索歌曲，艺人..." placeholder-style="color:rgba(42,42,53,0.55);font-size:26rpx"
+            <input placeholder="搜索歌曲，艺人..." placeholder-style="color:rgba(42,42,53,0.55);font-size:22rpx"
               value="{{searchKeyword}}" bindinput="onSearchInput" bindconfirm="onSearch" confirm-type="search" focus="{{true}}"/>
             <view class="ipod-search-btn" bindtap="onSearch">搜</view>
           </view>
 
           <!-- 搜索结果 -->
-          <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{searchResults.length > 0}}">
+          <scroll-view class="ipod-menu" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:if="{{searchResults.length > 0}}">
             <view id="si-{{index}}" class="ipod-search-item {{menuIndex === index ? 'wheel-highlight' : ''}}" wx:for="{{searchResults}}" wx:key="id" bindtap="onPlaySearchSong" data-idx="{{index}}">
               <image class="search-result-cover" src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
               <view class="info">
@@ -100,15 +145,58 @@
             </view>
           </scroll-view>
 
-          <!-- 搜索空状态 -->
-          <view class="ipod-search-empty" wx:elif="{{searchKeyword.length === 0}}">
-            <view class="ipod-search-empty-icon"></view>
-            <text class="ipod-search-empty-text">搜索在线音乐</text>
+          <!-- 搜索加载中 -->
+          <view class="ipod-search-empty" wx:elif="{{searchLoading}}">
+            <view class="ipod-search-spinner"></view>
+            <text class="ipod-search-empty-text">搜索中...</text>
           </view>
+
+          <!-- 搜索无结果 -->
+          <view class="ipod-search-empty" wx:elif="{{searchKeyword.length > 0 && searchResults.length === 0}}">
+            <view class="ipod-search-empty-icon"></view>
+            <text class="ipod-search-empty-text">未找到「{{searchKeyword}}」的结果</text>
+            <text class="ipod-search-empty-text" style="font-size:17rpx;opacity:0.5;margin-top:-4rpx;">换个关键词试试</text>
+          </view>
+
+          <!-- 搜索空状态（刚进入 / 输入清空） — 展示历史 + 热门歌手 -->
+          <scroll-view class="ipod-menu ipod-search-idle" scroll-y bindscroll="onListScroll" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:elif="{{searchKeyword.length === 0}}">
+
+            <!-- 搜索历史 -->
+            <view class="ipod-search-section" wx:if="{{searchHistory.length > 0}}">
+              <view class="ipod-search-section-header">
+                <text class="ipod-search-section-title">最近搜索</text>
+                <view class="ipod-search-section-clear" catchtap="_clearSearchHistory">
+                  <text>清空</text>
+                </view>
+              </view>
+              <view class="ipod-search-history-list">
+                <view class="ipod-search-history-item" wx:for="{{searchHistory}}" wx:key="*this" bindtap="onSearchKeywordTap" data-kw="{{item}}">
+                  <text class="ipod-search-history-icon">⏱</text>
+                  <text class="ipod-search-history-text">{{item}}</text>
+                  <view class="ipod-search-history-remove" catchtap="_removeSearchHistory" data-idx="{{index}}">×</view>
+                </view>
+              </view>
+            </view>
+
+            <!-- 热门歌手 -->
+            <view class="ipod-search-section">
+              <view class="ipod-search-section-header">
+                <text class="ipod-search-section-title">热门歌手</text>
+                <text class="ipod-search-section-sub">点击直接搜索</text>
+              </view>
+              <view class="ipod-hot-artists">
+                <view class="ipod-hot-artist-tag" wx:for="{{hotArtists}}" wx:key="name" bindtap="onSearchKeywordTap" data-kw="{{item.name}}">
+                  <text class="ipod-hot-artist-emoji">{{item.emoji}}</text>
+                  <text class="ipod-hot-artist-name">{{item.name}}</text>
+                </view>
+              </view>
+            </view>
+
+          </scroll-view>
         </block>
 
         <!-- ===== 热门推荐 ===== -->
-        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'hot'}}">
+        <scroll-view class="ipod-menu" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:if="{{currentView === 'hot'}}">
           <view id="hi-{{index}}" class="ipod-hot-item {{menuIndex === index ? 'wheel-highlight' : ''}}" wx:for="{{playlist}}" wx:key="id" bindtap="onPlayFromList" data-idx="{{index}}">
             <text class="hot-rank rank-{{index + 1}}">{{index + 1}}</text>
             <image class="hot-cover" src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
@@ -132,7 +220,7 @@
             <text class="icon">+</text>
             <text class="label">导入歌曲</text>
           </view>
-          <scroll-view class="ipod-local-list" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{localSongs.length > 0}}">
+          <scroll-view class="ipod-local-list" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:if="{{localSongs.length > 0}}">
             <view id="li-{{index}}" class="ipod-local-item {{menuIndex === index ? 'wheel-highlight' : ''}}" wx:for="{{localSongs}}" wx:key="path" bindtap="onPlayLocal" data-idx="{{index}}">
               <view class="local-file-icon">🎵</view>
               <view class="info">
@@ -156,7 +244,7 @@
           <view class="ipod-player-main" wx:if="{{playSong}}">
             <!-- 左侧专辑封面 -->
             <view class="ipod-player-left">
-              <image class="ipod-player-cover" src="{{playSong.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+              <image class="ipod-player-cover" src="{{playSong.cover || '/static/default-cover.png'}}" mode="aspectFill" bindtap="onCoverTap"/>
               <view class="ipod-player-meta">
                 <text class="title">{{playSong.name || '未选择歌曲'}}</text>
                 <text class="artist">{{playSong.artist || ''}}</text>
@@ -165,10 +253,13 @@
             </view>
             <!-- 右侧歌词 -->
             <view class="ipod-player-right">
-              <view class="ipod-player-lyrics" wx:if="{{lyrics.length > 0}}">
+              <scroll-view class="ipod-player-lyrics" scroll-y scroll-into-view="lyric-{{lyricScrollTarget}}" scroll-with-animation="true" wx:if="{{lyrics.length > 0}}">
                 <view class="line {{index === lyricActiveIdx ? 'active' : ''}}"
-                  wx:for="{{lyrics}}" wx:key="index">{{item.text}}</view>
-              </view>
+                  id="lyric-{{index}}" wx:for="{{lyrics}}" wx:key="index">
+                  <text class="line-text">{{item.text}}</text>
+                  <text class="line-tr" wx:if="{{item.tr}}">{{item.tr}}</text>
+                </view>
+              </scroll-view>
               <view class="ipod-player-lyrics" wx:else>
                 <view class="line empty">{{currentLyricText || '♪ 歌词加载中...'}}</view>
               </view>
@@ -179,7 +270,7 @@
           <view class="ipod-player-main" wx:else>
             <view class="ipod-player-left">
               <view class="ipod-player-cover empty-cover">
-                <text style="font-size:40rpx;opacity:0.2;">🎵</text>
+                <text style="font-size:34rpx;opacity:0.2;">🎵</text>
               </view>
               <view class="ipod-player-meta">
                 <text class="title">暂无播放</text>
@@ -212,25 +303,35 @@
 
           <!-- 控制栏 -->
           <view class="ipod-player-controls">
-            <view class="ctrl icon" bindtap="onShuffle">
-              <view wx:if="{{playMode === 0}}" class="play-icon-repeat"></view>
-              <view wx:elif="{{playMode === 1}}" class="play-icon-shuffle"></view>
-              <view wx:else class="play-icon-repeat-one">
-                <text class="play-icon-repeat-one-label">1</text>
+            <view class="ctrl" bindtap="onShuffle">
+              <text class="ctrl-glyph" wx:if="{{playMode === 0}}">↻</text>
+              <text class="ctrl-glyph" wx:elif="{{playMode === 1}}">⇄</text>
+              <view wx:else class="ctrl-glyph-wrap">
+                <text class="ctrl-glyph">↻</text>
+                <text class="ctrl-glyph-num">1</text>
               </view>
             </view>
-            <view class="ctrl icon" bindtap="onPrev">
-              <view class="play-icon-prev"></view>
+            <view class="ctrl" bindtap="onPrev">
+              <view class="icon-prev">
+                <view class="icon-prev-bar"></view>
+                <view class="icon-prev-tri"></view>
+              </view>
             </view>
             <view class="ctrl play-btn" bindtap="onTogglePlay">
-              <view wx:if="{{!playing}}" class="play-icon-play"></view>
-              <view wx:else class="play-icon-pause"></view>
+              <view wx:if="{{!playing}}" class="icon-play"></view>
+              <view wx:else class="icon-pause">
+                <view class="icon-pause-bar"></view>
+                <view class="icon-pause-bar"></view>
+              </view>
             </view>
-            <view class="ctrl icon" bindtap="onNext">
-              <view class="play-icon-next"></view>
+            <view class="ctrl" bindtap="onNext">
+              <view class="icon-next">
+                <view class="icon-next-tri"></view>
+                <view class="icon-next-bar"></view>
+              </view>
             </view>
-            <view class="ctrl icon" bindtap="onVolume">
-              <view class="play-icon-volume"></view>
+            <view class="ctrl" bindtap="onVolume">
+              <text class="ctrl-glyph">♪</text>
             </view>
           </view>
 
@@ -243,19 +344,32 @@
           <view class="neon-blob neon-blob-3"></view>
           <view class="neon-blob neon-blob-4"></view>
           <view class="neon-blob neon-blob-5"></view>
-          <view class="neon-blob neon-blob-6"></view>
           <view class="ipod-coverflow" wx:if="{{coverFlowData.length > 0}}"
             catchtouchstart="onCFTouchStart" catchtouchmove="onCFTouchMove" catchtouchend="onCFTouchEnd">
             <view class="ipod-coverflow-track">
-              <view class="ipod-coverflow-item {{idx === cfActiveIdx ? 'active' : ''}}"
+              <view class="ipod-coverflow-item {{idx === cfActiveIdx ? 'active' : ''}} {{idx === cfFlippedIdx ? 'flipped' : ''}}"
                 wx:for="{{coverFlowData}}" wx:key="id" wx:for-index="idx"
-                style="left: {{(idx - cfActiveIdx) * 120 + 215}}rpx; transform: perspective(800rpx) rotateY({{(idx - cfActiveIdx) * 22}}deg) scale({{idx === cfActiveIdx ? 1 : (idx === cfActiveIdx - 1 || idx === cfActiveIdx + 1 ? 0.88 : 0.72)}}); transform-origin: {{idx < cfActiveIdx ? '100% center' : (idx > cfActiveIdx ? '0% center' : 'center center')}}; z-index: {{idx === cfActiveIdx ? 100 : (idx === cfActiveIdx - 1 || idx === cfActiveIdx + 1 ? 60 : (idx === cfActiveIdx - 2 || idx === cfActiveIdx + 2 ? 35 : 10))}}; opacity: {{(idx >= cfActiveIdx - 3 && idx <= cfActiveIdx + 3) ? 1 : 0.08}};"
+                style="left: {{(idx - cfActiveIdx) * 95 + 210}}rpx; transform: perspective(380rpx) rotateY({{util.cfAngle(idx - cfActiveIdx)}}deg) scale({{util.cfScale(idx - cfActiveIdx)}}); transform-origin: {{util.cfOrigin(idx - cfActiveIdx)}}; z-index: {{util.cfZ(idx - cfActiveIdx)}}; opacity: {{util.cfVisible(idx - cfActiveIdx) ? 1 : 0.06}};"
                 bindtap="onCFTap" data-idx="{{idx}}">
-                <!-- 封面 -->
-                <view class="ipod-coverflow-cover">
-                  <image src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+                <!-- 翻转容器 -->
+                <view class="ipod-coverflow-card">
+                  <!-- 正面：封面 -->
+                  <view class="ipod-coverflow-front">
+                    <view class="ipod-coverflow-cover">
+                      <image src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+                    </view>
+                  </view>
+                  <!-- 背面：专辑信息 -->
+                  <view class="ipod-coverflow-back">
+                    <view class="cf-back-cover-spine"></view>
+                    <view class="cf-back-info">
+                      <text class="cf-back-name">{{item.name}}</text>
+                      <text class="cf-back-artist">{{item.artist}}</text>
+                      <text class="cf-back-count">{{item.songs.length}} songs</text>
+                    </view>
+                  </view>
                 </view>
-                <!-- 镜像倒影 -->
+                <!-- 镜像倒影（不参与翻转） -->
                 <view class="ipod-coverflow-reflection">
                   <image src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
                   <view class="ipod-coverflow-reflection-mask"></view>
@@ -266,12 +380,11 @@
           <view class="ipod-coverflow-label" wx:if="{{coverFlowData[cfActiveIdx]}}">
             <text class="title">{{coverFlowData[cfActiveIdx].name}}</text>
             <text class="artist">{{coverFlowData[cfActiveIdx].artist}}</text>
-            <text class="cf-tap-hint">tap again to view songs</text>
+            <text class="cf-tap-hint">tap to flip · tap again to view songs</text>
           </view>
-          <view class="ipod-search-empty" wx:if="{{coverFlowData.length === 0}}">
-            <view class="ipod-search-empty-icon"></view>
-            <text class="ipod-search-empty-text">暂无封面数据</text>
-            <view class="ipod-retry-btn" bindtap="onRetryPlaylist">重新加载</view>
+          <view class="ipod-coverflow-empty" wx:if="{{coverFlowData.length === 0}}">
+            <text class="ipod-coverflow-empty-text">暂无专辑</text>
+            <text class="ipod-coverflow-empty-sub">收藏歌曲后，专辑将在此展示</text>
           </view>
         </block>
 
@@ -286,7 +399,7 @@
             </view>
           </view>
           <!-- 歌曲列表 -->
-          <scroll-view class="ipod-menu album-songs-list" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}">
+          <scroll-view class="ipod-menu album-songs-list" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}">
             <view id="asi-{{index}}"
               class="ipod-album-song-item {{menuIndex === index ? 'wheel-highlight' : ''}} {{currentSong && currentSong.id === item.id ? 'playing' : ''}}"
               wx:for="{{albumSongs}}" wx:key="id" wx:for-index="index"
@@ -305,7 +418,7 @@
           </scroll-view>
         </block>
 
-        <!-- ===== 设置 ===== -->        <scroll-view class="ipod-menu" scroll-y scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" wx:if="{{currentView === 'settings'}}">
+        <!-- ===== 设置 ===== -->        <scroll-view class="ipod-menu" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:if="{{currentView === 'settings'}}">
           <view id="seti-0" class="ipod-setting-item {{settingsIndex === 0 ? 'active' : ''}}" bindtap="onPlayModeSwitch">
             <text class="label">播放模式</text>
             <text class="value">{{playModeLabel}}</text>
@@ -325,6 +438,16 @@
           <text class="info">{{currentSong.name}} — {{currentSong.artist}}</text>
         </view>
 
+        <!-- 右侧滚动位置指示条 -->
+        <view class="ipod-scrollbar-track {{scrollBarVisible ? 'visible' : ''}}" wx:if="{{currentView !== 'nowplaying' && currentView !== 'coverflow'}}">
+          <view class="ipod-scrollbar-thumb" style="top: {{scrollBarTop}}%; height: {{scrollBarHeight}}%;"></view>
+        </view>
+
+        <!-- 水墨过渡动画层 — wx:if 完全移除/创建，避免 opacity 残留 -->
+        <view class="ink-canvas-wrap" wx:if="{{inkAnimating}}">
+          <canvas type="2d" id="ink-canvas" class="ink-canvas-inner"></canvas>
+        </view>
+
       </view><!-- ipod-screen-inner -->
     </view><!-- ipod-screen -->
 
@@ -332,21 +455,36 @@
     <view class="ipod-wheel-wrap"
       bindtouchstart="onWheelTouchStart"
       bindtouchmove="onWheelTouchMove"
-      bindtouchend="onWheelTouchEnd">
+      bindtouchend="onWheelTouchEnd"
+      catchtouchcancel="onWheelTouchEnd">
       <view class="ipod-wheel">
         <view class="ipod-wheel-ring"></view>
         <view class="ipod-wheel-center" catchtap="onWheelCenter"></view>
-        <text class="ipod-wheel-btn top"    catchtap="onWheelMenuTap">MENU</text>
-        <text class="ipod-wheel-btn left"   catchtap="onWheelPrevTap">⏮</text>
-        <text class="ipod-wheel-btn right"  catchtap="onWheelNextTap">⏭</text>
-        <text class="ipod-wheel-btn bottom" catchtap="onWheelPlayTap">▶⏸</text>
+        <view class="ipod-wheel-btn top"    catchtap="onWheelMenuTap"><text>MENU</text></view>
+        <view class="ipod-wheel-btn left"   catchtap="onWheelPrevTap"><text>◀◀</text></view>
+        <view class="ipod-wheel-btn right"  catchtap="onWheelNextTap"><text>▶▶</text></view>
+        <view class="ipod-wheel-btn bottom" catchtap="onWheelPlayTap"><text>▶❚❚</text></view>
+      </view>
+    </view>
+
+    <!-- ========== EarPods 耳机线 —— 从机身底部右侧竖直插入 ========== -->
+    <view class="earpods-plug {{bootPhase === 'waiting' ? 'waiting' : ''}} {{bootPhase === 'inserting' ? 'inserting' : ''}} {{bootPhase === 'inserted' ? 'inserted' : ''}} {{bootPhase === 'plugged' ? 'plugged' : ''}}" wx:if="{{bootPhase !== 'idle'}}">
+      <!-- 超长白色耳机线（自然下垂） -->
+      <view class="earpods-cable"></view>
+      <!-- 白色 EarPods 连接器底座（贴机身底部边缘） -->
+      <view class="earpods-base"></view>
+      <!-- 3.5mm 金属插头（竖直向上，3道绝缘环） -->
+      <view class="earpods-jack">
+        <view class="earpods-ring"></view>
+        <view class="earpods-ring"></view>
+        <view class="earpods-ring"></view>
       </view>
     </view>
 
   </view><!-- ipod-body -->
 
   <!-- ========== 主题切换器 — 7色金属质感 ========== -->
-  <view class="theme-switcher" wx:if="{{currentView === 'menu'}}">
+  <view class="theme-switcher">
     <view class="theme-dot silver {{bodyColor === 'silver' ? 'active' : ''}}" bindtap="onColorChange" data-color="silver"></view>
     <view class="theme-dot black {{bodyColor === 'black' ? 'active' : ''}}" bindtap="onColorChange" data-color="black"></view>
     <view class="theme-dot orange {{bodyColor === 'orange' ? 'active' : ''}}" bindtap="onColorChange" data-color="orange"></view>
@@ -354,6 +492,120 @@
     <view class="theme-dot taro {{bodyColor === 'taro' ? 'active' : ''}}" bindtap="onColorChange" data-color="taro"></view>
     <view class="theme-dot pink {{bodyColor === 'pink' ? 'active' : ''}}" bindtap="onColorChange" data-color="pink"></view>
     <view class="theme-dot citrus {{bodyColor === 'citrus' ? 'active' : ''}}" bindtap="onColorChange" data-color="citrus"></view>
+  </view>
+
+  <!-- ========== 欢迎弹窗 ========== -->
+  <view class="welcome-mask" wx:if="{{showWelcome}}" bindtap="onCloseWelcome">
+    <view class="welcome-card" catchtap="">
+      <view class="welcome-title">TY Pod</view>
+      <view class="welcome-subtitle">使用指南</view>
+      <view class="welcome-divider"></view>
+      <view class="welcome-list">
+        <view class="welcome-item">
+          <text class="welcome-icon">🎵</text>
+          <text class="welcome-text">点击歌曲开始播放，支持歌词同步显示</text>
+        </view>
+        <view class="welcome-item">
+          <text class="welcome-icon">💿</text>
+          <text class="welcome-text">可滑动轮盘在 Cover Flow 里浏览专辑详情</text>
+        </view>
+        <view class="welcome-item">
+          <text class="welcome-icon">🎨</text>
+          <text class="welcome-text">底部色点可切换 7 种机身配色</text>
+        </view>
+        <view class="welcome-item">
+          <text class="welcome-icon">💗</text>
+          <text class="welcome-text">点击歌曲旁边桃心按钮，可收藏歌曲所在专辑到 Cover Flow</text>
+        </view>
+        <view class="welcome-item">
+          <text class="welcome-icon">🖼️</text>
+          <text class="welcome-text">在 Now Playing 界面点击专辑封面，可展开全屏歌词浮窗</text>
+        </view>
+      </view>
+      <view class="welcome-divider"></view>
+      <view class="welcome-btn" bindtap="onCloseWelcome">
+        <text>开始体验</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 全屏歌词浮窗 ========== -->
+  <view class="full-lyric-mask" wx:if="{{showFullLyric}}" catchtap="onCloseFullLyric">
+    <!-- 模糊专辑封面背景 — 提供主题色基底 -->
+    <image class="full-lyric-bg" src="{{playSong.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+    <!-- 色块流动感 -->
+    <view class="full-lyric-flow flow-1"></view>
+    <view class="full-lyric-flow flow-2"></view>
+    <view class="full-lyric-flow flow-3"></view>
+    <view class="full-lyric-flow flow-4"></view>
+    <view class="full-lyric-flow flow-5"></view>
+    <!-- 玻璃通透遮罩 -->
+    <view class="full-lyric-overlay"></view>
+
+    <!-- 内容区 -->
+    <view class="full-lyric-content" catchtap="" style="--tc:{{themeColor}};--tc-bright:{{themeColorBright}};--tc-soft:{{themeColorSoft}};">
+      <!-- 顶部：关闭按钮 + 歌曲信息 -->
+      <view class="full-lyric-header">
+        <view class="full-lyric-close" catchtap="onCloseFullLyric">
+          <view class="full-lyric-close-icon"></view>
+        </view>
+        <view class="full-lyric-song-info">
+          <text class="full-lyric-song-name">{{playSong.name}}</text>
+          <text class="full-lyric-song-artist">{{playSong.artist}}</text>
+        </view>
+      </view>
+
+      <!-- 中间：左专辑 2.5D + 右歌词 -->
+      <view class="full-lyric-body">
+        <!-- 左侧：专辑封面 2.5D -->
+        <view class="full-lyric-album-side">
+          <view class="full-lyric-album-3d">
+            <image class="full-lyric-album-cover" src="{{playSong.cover || '/static/default-cover.png'}}" mode="aspectFill"/>
+            <view class="full-lyric-album-glow"></view>
+          </view>
+          <view class="full-lyric-album-reflection"></view>
+        </view>
+
+        <!-- 右侧：歌词滚动区 -->
+        <view class="full-lyric-lyric-side">
+          <scroll-view class="full-lyric-scroll" scroll-y scroll-top="{{fullLyricScrollTop}}" scroll-with-animation="{{true}}" enhanced show-scrollbar="{{false}}">
+            <view class="full-lyric-list" wx:if="{{lyrics.length > 0}}">
+              <view class="full-lyric-line {{index === lyricActiveIdx ? 'active' : ''}}"
+                id="fl-lyric-{{index}}" wx:for="{{lyrics}}" wx:key="index">
+                <text class="full-lyric-line-text">{{item.text}}</text>
+                <text class="full-lyric-line-tr" wx:if="{{item.tr}}">{{item.tr}}</text>
+              </view>
+            </view>
+            <view class="full-lyric-empty" wx:else>
+              <text>{{currentLyricText || '♪ 歌词加载中...'}}</text>
+            </view>
+          </scroll-view>
+        </view>
+      </view>
+
+      <!-- 底部：左音波 + 进度条 + 右音波 -->
+      <view class="full-lyric-footer">
+        <!-- 左音波条（18根，从右向左排列） -->
+        <view class="full-lyric-wave full-lyric-wave-left">
+          <view class="wave-bar" wx:for="{{waveHeightsL}}" wx:key="*this" style="height: {{item}}rpx;"></view>
+        </view>
+        <!-- 中间进度条 -->
+        <view class="full-lyric-progress-wrap">
+          <view class="full-lyric-progress-bar">
+            <view class="full-lyric-progress-fill" style="width:{{duration > 0 ? currentTime/duration*100 : 0}}%"></view>
+            <view class="full-lyric-progress-dot" style="left:{{duration > 0 ? currentTime/duration*100 : 0}}%"></view>
+          </view>
+          <view class="full-lyric-time">
+            <text>{{currentTimeFmt}}</text>
+            <text>{{durationFmt}}</text>
+          </view>
+        </view>
+        <!-- 右音波条（18根，从左向右排列） -->
+        <view class="full-lyric-wave full-lyric-wave-right">
+          <view class="wave-bar" wx:for="{{waveHeightsR}}" wx:key="*this" style="height: {{item}}rpx;"></view>
+        </view>
+      </view>
+    </view>
   </view>
 
 </view><!-- ipod-container -->
