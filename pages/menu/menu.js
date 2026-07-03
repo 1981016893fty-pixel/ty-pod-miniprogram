@@ -207,10 +207,11 @@ Page({
   _warmupServer() {
     return new Promise((resolve) => {
       const done = (msg) => { console.log('[Warmup]', msg); resolve() }
-      const timer = setTimeout(() => done('超时，直接加载'), 10000)
+      // Render 免费版冷启动可达 30s+，给足等待时间
+      const timer = setTimeout(() => done('超时，直接加载'), 35000)
       wx.request({
         url: 'https://ty-music.onrender.com/api/health',
-        timeout: 8000,
+        timeout: 30000,
         success: () => { clearTimeout(timer); done('Server is awake') },
         fail: (err) => { clearTimeout(timer); done('Server still starting... ' + (err?.errMsg || '')) },
       })
@@ -476,7 +477,7 @@ Page({
       wx.request({
         url: 'https://ty-music.onrender.com/api/music/search?keywords=' + encodeURIComponent(artist) + '&limit=30',
         method: 'GET',
-        timeout: 15000,
+        timeout: 18000,
         success: (res) => {
           if (res.statusCode === 200 && res.data?.songs) {
             const songs = res.data.songs.map(s => this._norm(s))
@@ -504,7 +505,18 @@ Page({
       })
     }
 
-    for (const a of artists) searchOne(a)
+    // 分批并发：每批 3 个，避免冷启动时 11 个请求争抢同一 Node 进程
+    const BATCH = 3
+    let i = 0
+    const next = () => {
+      if (i >= artists.length) return
+      const batch = artists.slice(i, i + BATCH)
+      i += BATCH
+      batch.forEach(a => searchOne(a))
+      // 本批全部发起后再排下一批（每个请求独立计时，不等回调）
+      setTimeout(next, 400)
+    }
+    next()
   },
 
   /* 降级兜底 — 搜索全部失败时用旧接口 */
