@@ -115,10 +115,14 @@
             <text class="ipod-menu-item-label">正在播放</text>
           </view>
           <view id="mi-3" class="ipod-menu-item {{menuIndex === 3 ? 'active' : ''}}" bindtap="onMenuTap" data-idx="3">
-            <text class="ipod-menu-item-label">本地音乐</text>
+            <text class="ipod-menu-item-label">播放历史</text>
             <text class="ipod-menu-item-arrow">›</text>
           </view>
           <view id="mi-4" class="ipod-menu-item {{menuIndex === 4 ? 'active' : ''}}" bindtap="onMenuTap" data-idx="4">
+            <text class="ipod-menu-item-label">本地音乐</text>
+            <text class="ipod-menu-item-arrow">›</text>
+          </view>
+          <view id="mi-5" class="ipod-menu-item {{menuIndex === 5 ? 'active' : ''}}" bindtap="onMenuTap" data-idx="5">
             <text class="ipod-menu-item-label">设置</text>
             <text class="ipod-menu-item-arrow">›</text>
           </view>
@@ -204,6 +208,35 @@
             </view>
 
           </scroll-view>
+        </block>
+
+        <!-- ===== 播放历史 ===== -->
+        <block wx:if="{{currentView === 'history'}}">
+          <!-- 顶部：清空按钮 -->
+          <view class="ipod-history-header" wx:if="{{playHistory.length > 0}}">
+            <text class="ipod-history-count">已记录 {{playHistory.length}} / 50 首</text>
+            <view class="ipod-history-clear" catchtap="_clearPlayHistory">
+              <text>清空</text>
+            </view>
+          </view>
+          <!-- 历史歌曲列表 -->
+          <scroll-view class="ipod-menu" scroll-y bindscroll="onListScroll" scroll-into-view="{{wheelScrollTarget}}" enhanced show-scrollbar="{{false}}" scroll-with-animation="{{false}}" wx:if="{{playHistory.length > 0}}">
+            <view id="phi-{{index}}" class="ipod-search-item {{menuIndex === index ? 'wheel-highlight' : ''}} {{currentSong && currentSong.id === item.id ? 'playing' : ''}}" wx:for="{{playHistory}}" wx:key="id" bindtap="onPlayHistorySong" data-idx="{{index}}">
+              <image class="search-result-cover" src="{{item.cover || '/static/default-cover.png'}}" mode="aspectFill" lazy-load="{{true}}"/>
+              <view class="info">
+                <text class="name">{{item.name}}</text>
+                <text class="artist">{{item.artist}}</text>
+              </view>
+              <text class="arrow">›</text>
+              <text class="heart {{util.isFav(favIds, item.id) ? 'hearted' : ''}}" catchtap="toggleFavorite" data-idx="{{index}}">{{util.isFav(favIds, item.id) ? '♥' : '♡'}}</text>
+            </view>
+          </scroll-view>
+          <!-- 空状态 -->
+          <view class="ipod-search-empty" wx:else>
+            <view class="ipod-search-empty-icon"></view>
+            <text class="ipod-search-empty-text">暂无播放记录</text>
+            <text class="ipod-search-empty-text" style="font-size:17rpx;opacity:0.5;margin-top:-4rpx;">播放歌曲后会自动记录在这里</text>
+          </view>
         </block>
 
         <!-- ===== 热门推荐 ===== -->

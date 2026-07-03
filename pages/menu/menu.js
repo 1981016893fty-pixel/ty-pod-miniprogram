@@ -11,6 +11,7 @@ const VIEW_TITLES = {
   coverflow:   'Cover Flow',
   albumsongs:  'Album',
   settings:    'Settings',
+  history:     'Play History',
 }
 
 Page({
@@ -100,6 +101,9 @@ Page({
     favorites: [],
     favIds: [],
 
+    /* ——— 播放历史（最多 50 首，最新在前，去重） ——— */
+    playHistory: [],
+
     /* ——— 状态 ——— */
     _networkErrorShown: false,
     playlistLoaded: false,
@@ -127,6 +131,7 @@ Page({
     this._loadLocalSongs()
     this._loadFavorites()
     this._loadSearchHistory()
+    this._loadPlayHistory()
 
     // 搜索缓存（最多 20 条，避免重复请求唤醒 render.com）
     this._searchCache = new Map()
@@ -1262,7 +1267,8 @@ Page({
       return
     }
     this.setData({ menuIndex: idx })
-    this._pushView(['onlinemusic','coverflow','nowplaying','localmusic','settings'][idx])
+    const viewMap = ['onlinemusic', 'coverflow', 'nowplaying', 'history', 'localmusic', 'settings']
+    this._pushView(viewMap[idx])
   },
 
   onSubMenuTap(e) {
@@ -1433,6 +1439,56 @@ Page({
     this.setData({ searchHistory: [] })
     this._saveSearchHistory([])
   },
+
+  /* ——— 播放历史持久化 ——— */
+  _loadPlayHistory() {
+    try {
+      const raw = wx.getStorageSync('typod_play_history')
+      const list = Array.isArray(raw) ? raw.filter(s => s && (s.id != null) && s.name) : []
+      this.setData({ playHistory: list })
+    } catch (e) { /* 读取失败保持空 */ }
+  },
+  _savePlayHistory(list) {
+    try { wx.setStorageSync('typod_play_history', list) } catch (e) { /* 存储满了就丢这条 */ }
+  },
+  // 每次开始播放时记录：去重 + 最新置顶
+  // 超过 50 首时刷新清空，并从当前这首开始继续记录（满足"超出就刷新清空并继续记录"）
+  _addPlayHistory(song) {
+    if (!song || song.id == null) return
+    // 抽出关键字段（本地文件可能没有 id，用 path 作为 fallback 唯一键）
+    const entry = {
+      id:       song.id,
+      name:     song.name,
+      artist:   song.artist || '',
+      cover:    song.cover || '',
+      duration: song.duration || 0,
+      path:     song.path || '',
+    }
+    const KEY = 'id'
+    const cur = this.data.playHistory || []
+    const filtered = cur.filter(s => s[KEY] !== entry[KEY])
+    filtered.unshift(entry)
+    let next
+    if (filtered.length > 50) {
+      // 超出 50：清空旧记录，从当前这首开始（filtered[0]）继续累计
+      next = [filtered[0]]
+    } else {
+      next = filtered
+    }
+    this.setData({ playHistory: next })
+    this._savePlayHistory(next)
+  },
+  // 清空播放历史
+  _clearPlayHistory() {
+    this.setData({ playHistory: [] })
+    this._savePlayHistory([])
+  },
+  // 点击历史中的歌曲
+  onPlayHistorySong(e) {
+    const idx = +e.currentTarget.dataset.idx
+    const song = this.data.playHistory[idx]
+    if (song) this._play(song)
+  },
   /* 搜索结果磁盘缓存 — 小程序关闭/杀掉后再次打开秒开 */
   _persistSearchCache() {
     try {
@@ -1560,6 +1616,8 @@ Page({
 
   _play(song) {
     if (!song) return
+    // ⭐ 记录到播放历史（去重、最新置顶、超过 50 全部清空后从 0 继续）
+    this._addPlayHistory(song)
     const base = { ...song }
     // ⭐ 立刻展示 Now Playing + loading（用户立刻看到界面切换，感知更快）
     this.setData({

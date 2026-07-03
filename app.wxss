@@ -1148,6 +1148,8 @@ page {
   flex-shrink: 0;
   margin-left: auto;
 }
+.ipod-search-item.playing { background: rgba(255,108,172,0.10); }
+.ipod-search-item.playing .name { color: rgb(255,108,172); }
 
 /* ===========================================
    正在播放
@@ -3080,4 +3082,31 @@ page {
   font-weight: 500;
   color: rgba(255,255,255,0.92);
   letter-spacing: 0.5rpx;
+}
+
+/* 播放历史 — 顶部条（计数 + 清空） */
+.ipod-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8rpx 14rpx 4rpx;
+}
+.ipod-history-count {
+  font-size: 17rpx;
+  color: rgba(255,255,255,0.50);
+  letter-spacing: 0.5rpx;
+}
+.ipod-history-clear {
+  padding: 4rpx 14rpx;
+  font-size: 17rpx;
+  color: rgba(255,255,255,0.62);
+  border: 0.5rpx solid rgba(255,255,255,0.20);
+  border-radius: 16rpx;
+  background: rgba(255,255,255,0.06);
+}
+.ipod-history-clear:active {
+  background: rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.92);
+  transform: scale(0.96);
+  transition: transform 0.08s ease-out;
 }
