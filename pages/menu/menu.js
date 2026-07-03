@@ -447,16 +447,11 @@ Page({
       }
 
       if (!albumMap.has(key)) {
-        // 封面：有 picId 时拼网易云封面 URL，否则用歌曲自带的 cover
-        let coverUrl = s.cover || '/static/default-cover.png'
-        if (picId) {
-          coverUrl = 'https://p1.music.126.net/' + picId + '/' + picId + '.jpg'
-        }
         albumMap.set(key, {
           id:       key,
           name:     (albumName && albumName !== s.name) ? albumName : (s.artist || '未知专辑'),
           artist:   s.artist || '',
-          cover:    coverUrl,
+          cover:    s.cover || '/static/default-cover.png',   // 直接用歌曲自带 cover（_norm 已拼好完整URL）
           albumId:  albumId || picId,
           picId:    picId,
           songs:    [],
