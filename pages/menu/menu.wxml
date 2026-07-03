@@ -45,7 +45,18 @@
     if (diff > 0) return '0% center'
     return 'center center'
   }
-  module.exports = { isFav: isFav, cfAngle: cfAngle, cfScale: cfScale, cfZ: cfZ, cfVisible: cfVisible, cfOrigin: cfOrigin }
+  // 浮窗歌词：根据与当前行的距离返回透明度等级 class
+  // dist == 0 → 'cur'（当前高亮），|dist| <= 1 → 'near'，|dist| <= 3 → 'mid'，其余 → 'far'
+  function lyricDist(idx, active) {
+    if (active === undefined || active === null) return 'far'
+    var d = idx - active
+    var abs = d >= 0 ? d : -d
+    if (abs === 0) return 'cur'
+    if (abs === 1) return 'near'
+    if (abs <= 3) return 'mid'
+    return 'far'
+  }
+  module.exports = { isFav: isFav, cfAngle: cfAngle, cfScale: cfScale, cfZ: cfZ, cfVisible: cfVisible, cfOrigin: cfOrigin, lyricDist: lyricDist }
 </wxs>
 <view class="ipod-container">
 
@@ -576,7 +587,7 @@
         <view class="full-lyric-lyric-side">
           <scroll-view class="full-lyric-scroll" scroll-y scroll-top="{{fullLyricScrollTop}}" scroll-with-animation="{{true}}" enhanced show-scrollbar="{{false}}">
             <view class="full-lyric-list" wx:if="{{lyrics.length > 0}}">
-              <view class="full-lyric-line {{index === lyricActiveIdx ? 'active' : ''}}"
+              <view class="full-lyric-line full-lyric-line--{{util.lyricDist(index, lyricActiveIdx)}}"
                 id="fl-lyric-{{index}}" wx:for="{{lyrics}}" wx:key="index">
                 <text class="full-lyric-line-text">{{item.text}}</text>
                 <text class="full-lyric-line-tr" wx:if="{{item.tr}}">{{item.tr}}</text>

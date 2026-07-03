@@ -2780,18 +2780,46 @@ page {
 }
 .full-lyric-line {
   font-size: 28rpx;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.20);
   text-align: left;
   line-height: 1.6;
   padding: 10rpx 0;
-  transition: color 0.4s ease, transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), text-shadow 0.4s ease;
+  /* 慢慢淡入淡出：0.5s 缓动，距离变化时温柔过渡 */
+  transition: color 0.5s ease, opacity 0.5s ease, transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), text-shadow 0.5s ease;
   max-width: 100%;
   word-break: break-word;
   text-shadow: 0 1rpx 4rpx rgba(0,0,0,0.20);
   transform-origin: left center;
-  will-change: transform;
+  will-change: transform, opacity;
   display: flex;
   flex-direction: column;
+  opacity: 0.15;
+}
+/* 默认/远处的句子：基本不显示，慢慢淡出 */
+.full-lyric-line--far {
+  color: rgba(255,255,255,0.18);
+  opacity: 0.08;
+}
+/* 距离 2-3 行：开始慢慢显出，隐约可见 */
+.full-lyric-line--mid {
+  color: rgba(255,255,255,0.30);
+  opacity: 0.30;
+}
+/* 距离 1 行（下一句/上一句）：更亮一点，准备进入 */
+.full-lyric-line--near {
+  color: rgba(255,255,255,0.55);
+  opacity: 0.55;
+}
+/* 当前行：最亮，放大平移，柔和发光 */
+.full-lyric-line--cur {
+  color: #ffffff;
+  font-weight: 700;
+  opacity: 1;
+  text-shadow:
+    0 0 16rpx rgba(255,255,255,0.40),
+    0 0 24rpx rgba(255,255,255,0.15),
+    0 1rpx 6rpx rgba(0,0,0,0.25);
+  transform: translateX(6rpx) scale(1.15);
 }
 .full-lyric-line .full-lyric-line-text {
   display: block;
@@ -2799,22 +2827,16 @@ page {
 .full-lyric-line .full-lyric-line-tr {
   display: block;
   font-size: 22rpx;
-  color: rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.20);
   line-height: 1.5;
   margin-top: 2rpx;
+  transition: color 0.5s ease, opacity 0.5s ease;
 }
-.full-lyric-line.active {
-  color: #ffffff;
-  font-weight: 700;
-  text-shadow:
-    0 0 16rpx rgba(255,255,255,0.40),
-    0 0 24rpx rgba(255,255,255,0.15),
-    0 1rpx 6rpx rgba(0,0,0,0.25);
-  transform: translateX(6rpx) scale(1.15);
-}
-.full-lyric-line.active .full-lyric-line-tr {
-  color: rgba(255,255,255,0.60);
-}
+/* 翻译行：跟随主行同步淡入淡出 */
+.full-lyric-line--far .full-lyric-line-tr { color: rgba(255,255,255,0.18); opacity: 0.08; }
+.full-lyric-line--mid .full-lyric-line-tr { color: rgba(255,255,255,0.22); opacity: 0.30; }
+.full-lyric-line--near .full-lyric-line-tr { color: rgba(255,255,255,0.45); opacity: 0.55; }
+.full-lyric-line--cur .full-lyric-line-tr { color: rgba(255,255,255,0.60); opacity: 1; }
 .full-lyric-empty {
   display: flex;
   align-items: center;
