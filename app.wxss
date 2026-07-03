@@ -2797,18 +2797,18 @@ page {
 }
 /* 默认/远处的句子：基本不显示，慢慢淡出 */
 .full-lyric-line--far {
-  color: rgba(255,255,255,0.45);
-  opacity: 0.45;
+  color: rgba(255,255,255,0.20);
+  opacity: 0.20;
 }
 /* 距离 3-6 行：屏幕中段可见区域，保持正常可见度 */
 .full-lyric-line--mid {
-  color: rgba(255,255,255,0.70);
-  opacity: 0.70;
+  color: rgba(255,255,255,0.45);
+  opacity: 0.45;
 }
 /* 距离 1-2 行（下一句/上一句）：屏幕中央可见区，清晰可见 */
 .full-lyric-line--near {
-  color: rgba(255,255,255,0.90);
-  opacity: 0.90;
+  color: rgba(255,255,255,0.75);
+  opacity: 0.75;
 }
 /* 当前行：最亮，放大平移，柔和发光 */
 .full-lyric-line--cur {
@@ -2833,9 +2833,9 @@ page {
   transition: color 0.5s ease, opacity 0.5s ease;
 }
 /* 翻译行：跟随主行同步淡入淡出 */
-.full-lyric-line--far .full-lyric-line-tr { color: rgba(255,255,255,0.40); opacity: 0.45; }
-.full-lyric-line--mid .full-lyric-line-tr { color: rgba(255,255,255,0.60); opacity: 0.70; }
-.full-lyric-line--near .full-lyric-line-tr { color: rgba(255,255,255,0.80); opacity: 0.90; }
+.full-lyric-line--far .full-lyric-line-tr { color: rgba(255,255,255,0.20); opacity: 0.20; }
+.full-lyric-line--mid .full-lyric-line-tr { color: rgba(255,255,255,0.40); opacity: 0.45; }
+.full-lyric-line--near .full-lyric-line-tr { color: rgba(255,255,255,0.65); opacity: 0.75; }
 .full-lyric-line--cur .full-lyric-line-tr { color: rgba(255,255,255,0.60); opacity: 1; }
 .full-lyric-empty {
   display: flex;
