@@ -179,7 +179,11 @@ Page({
   /* 点击专辑封面 → 打开全屏歌词浮窗 */
   onCoverTap() {
     if (!this.data.playSong) return
-    this.setData({ showFullLyric: true })
+    // ★ 重置滚动位置 + 清空行位置缓存：每次开浮窗都重新测量，
+    //   防止重复开关时拿到的仍是上次的过期缓存
+    this._lyricRects = null
+    this._lyricSvHeight = 0
+    this.setData({ showFullLyric: true, fullLyricScrollTop: 0 })
     // 延迟等待浮窗渲染完成后测量行位置并滚动到当前行
     setTimeout(() => {
       this._measureLyricRects()
@@ -190,6 +194,9 @@ Page({
   /* 关闭全屏歌词浮窗 */
   onCloseFullLyric() {
     this.setData({ showFullLyric: false })
+    // ★ 关掉浮窗时清空缓存：下次打开时强制重新测量，避免使用过期行位置
+    this._lyricRects = null
+    this._lyricSvHeight = 0
   },
 
   /* 预热后端服务器（Render.com 免费版有冷启动，提前唤醒）
@@ -1670,6 +1677,10 @@ Page({
         currentLyricText: lyrics[idx]?.text || '',
         fullLyricScrollTop: scrollTop
       })
+      // ★ 缓存缺失：异步重新测量，下次切行就能精确滚动
+      if (this.data.showFullLyric && (!this._lyricRects || !this._lyricRects[idx])) {
+        this._measureLyricRects()
+      }
     }
   },
 
@@ -1742,9 +1753,10 @@ Page({
       this.setData({ fullLyricScrollTop: target })
       return
     }
-    // 缓存不存在则测量并缓存
+    // 缓存不存在则强制测量一次（不受 showFullLyric 守卫影响，因为这里调用时浮窗已开）
     this._measureLyricRects()
     setTimeout(() => {
+      if (!this.data.showFullLyric) return
       if (this._lyricRects && this._lyricRects[idx] && this._lyricSvHeight) {
         const rect = this._lyricRects[idx]
         const target = Math.max(0, rect.top + rect.height / 2 - this._lyricSvHeight / 2)
