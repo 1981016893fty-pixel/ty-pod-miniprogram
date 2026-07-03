@@ -80,6 +80,7 @@ Page({
     bootPhase:     'idle',  // idle → inserting → inserted → plugged
     showWelcome:   true,    // 开机欢迎弹窗，关闭后才开始插入动画
     showFullLyric: false,   // 全屏歌词浮窗
+    miniBarEntering: false, // Mini 播放条入场动画触发
 
     /* ——— CoverFlow ——— */
     cfActiveIdx: 0,
@@ -558,6 +559,20 @@ Page({
       searchKeyword: '', searchResults: [], searchLoading: false,
       scrollBarVisible: false,
     })
+    // 从 Now Playing 返回时，触发 mini 播放条入场动画
+    if (this.data.playSong && this.data.currentView !== 'nowplaying') {
+      this.setData({ miniBarEntering: false })
+      setTimeout(() => { this.setData({ miniBarEntering: true }) }, 50)
+    }
+  },
+
+  onOpenNowPlaying() {
+    if (this.data.currentView === 'nowplaying') return
+    if (!this.data.playSong) return
+    // 隐藏 mini-bar 入场态，避免在过渡中闪烁
+    this.setData({ miniBarEntering: false })
+    this._pushView('nowplaying')
+    this.setData({ viewTitle: 'Now Playing' })
   },
 
   _pushView(view) {

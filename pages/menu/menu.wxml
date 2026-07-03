@@ -451,6 +451,22 @@
       </view><!-- ipod-screen-inner -->
     </view><!-- ipod-screen -->
 
+    <!-- ========== Mini 播放条 —— 屏幕外底部边边显示（非 Now Playing 页面时）========== -->
+    <view wx:if="{{playSong && currentView !== 'nowplaying'}}"
+      class="mini-bar {{miniBarEntering ? 'mini-bar-enter' : ''}}"
+      bindtap="onOpenNowPlaying"
+      hover-class="mini-bar-hover"
+      hover-stay-time="120">
+      <view class="mini-bar-cover">
+        <image wx:if="{{playSong.cover}}" src="{{playSong.cover}}" mode="aspectFill"></image>
+        <view wx:else class="mini-bar-cover-placeholder"></view>
+      </view>
+      <view class="mini-bar-text">
+        <view class="mini-bar-title">{{playSong.name || playSong.title || '正在播放'}}</view>
+        <view class="mini-bar-artist">{{playSong.artist || '未知艺人'}}</view>
+      </view>
+    </view>
+
     <!-- ========== 滚轮 ========== -->
     <view class="ipod-wheel-wrap"
       bindtouchstart="onWheelTouchStart"

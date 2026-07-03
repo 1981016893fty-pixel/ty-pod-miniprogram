@@ -1880,6 +1880,106 @@ page {
 }
 
 /* ===========================================
+   Mini 播放条 —— 贴在屏幕底沿，机身表面悬浮
+   触发条件：playSong 存在且不在 Now Playing 页面
+   =========================================== */
+.mini-bar {
+  position: absolute;
+  /* 屏幕底沿 48%，贴屏幕外侧底边，留 4rpx 间隙避免和屏幕圆角重叠 */
+  top: 48.4%;
+  /* 屏幕水平 7% 边距，mini 条稍宽 2% 两侧各突出 1% */
+  left: 5%;
+  right: 5%;
+  /* 必须 > ipod-screen 的 z-index:12，确保浮在屏幕外侧 */
+  z-index: 13;
+  height: 60rpx;
+  border-radius: 14rpx;
+  /* iPod Classic 锁屏条风格：半透明白底 + 玻璃模糊 */
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.92) 0%,
+    rgba(245,245,250,0.88) 100%);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  /* iPod 机身金属边阴影：凸起 + 内嵌边框 */
+  box-shadow:
+    /* 上沿白色高光（金属机身反光） */
+    inset 0 1rpx 0 rgba(255,255,255,0.95),
+    /* 下沿阴影（凹入机身感） */
+    inset 0 -1rpx 0 rgba(0,0,0,0.08),
+    /* 外悬浮阴影 */
+    0 4rpx 12rpx rgba(0,0,0,0.18),
+    0 1rpx 2rpx rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  padding: 6rpx 12rpx 6rpx 6rpx;
+  box-sizing: border-box;
+  gap: 10rpx;
+  overflow: hidden;
+  /* 入场动画初始态 */
+  opacity: 0;
+  transform: translateY(-20rpx) scale(0.92);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.mini-bar.mini-bar-enter {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.mini-bar.mini-bar-hover {
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.98) 0%,
+    rgba(235,235,240,0.95) 100%);
+  transform: scale(0.985);
+  transition: transform 0.12s ease;
+}
+
+.mini-bar-cover {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.1);
+  box-shadow: 0 1rpx 3rpx rgba(0,0,0,0.15);
+}
+.mini-bar-cover image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.mini-bar-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #d4d4d8 0%, #a1a1aa 100%);
+}
+
+.mini-bar-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+}
+.mini-bar-title {
+  font-size: 20rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-bar-artist {
+  font-size: 16rpx;
+  color: #6b6b6b;
+  line-height: 1.2;
+  margin-top: 2rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===========================================
    滚轮 — iPod Click Wheel · 陶瓷嵌入金属机身
    沉坑底衬 → 轮盘 → 中心按钮 三层立体结构
    =========================================== */
