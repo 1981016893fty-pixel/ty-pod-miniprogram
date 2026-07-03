@@ -559,7 +559,7 @@ Page({
       searchKeyword: '', searchResults: [], searchLoading: false,
       scrollBarVisible: false,
     })
-    // 从 Now Playing 返回时，触发 mini 播放条入场动画
+    // 从 Now Playing 返回到非 Now Playing 页面时，触发屏幕内 mini 条入场动画
     if (this.data.playSong && this.data.currentView !== 'nowplaying') {
       this.setData({ miniBarEntering: false })
       setTimeout(() => { this.setData({ miniBarEntering: true }) }, 50)
