@@ -429,7 +429,7 @@
               <text class="arrow" wx:else>›</text>
             </view>
             <view class="album-songs-empty" wx:if="{{albumSongs.length === 0}}">
-              <text>正在加载歌曲...</text>
+              <text>暂无歌曲</text>
             </view>
           </scroll-view>
         </block>

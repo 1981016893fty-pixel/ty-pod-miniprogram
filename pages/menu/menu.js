@@ -270,10 +270,10 @@ Page({
       app.globalData.player.currentTime = ct
     }
     this._queryWheelCenter()
-    /* 回到前台：检查是否已过3分钟，过了立即换，然后重新计时 */
+    /* 回到前台：检查是否已过2分钟，过了立即换，然后重新计时 */
     if (this._bgLastChange) {
       const elapsed = Date.now() - this._bgLastChange
-      if (elapsed >= 3 * 60 * 1000) {
+      if (elapsed >= 2 * 60 * 1000) {
         const next = (this.data.bgIndex + 1) % this.data.bgImages.length
         this.setData({ bgIndex: next })
       }
@@ -2451,10 +2451,10 @@ Page({
     if (this._bgTimer) { clearInterval(this._bgTimer); this._bgTimer = null }
   },
 
-  /* 凯斯哈林背景图轮播 — 每3分钟切换，用短轮询代替长setInterval */
+  /* 凯斯哈林背景图轮播 — 每2分钟切换，用短轮询代替长setInterval */
   _startBgRotation() {
     this._bgLastChange = Date.now()
-    this._bgInterval = 3 * 60 * 1000
+    this._bgInterval = 2 * 60 * 1000
     this._bgTimer = setInterval(() => {
       if (Date.now() - this._bgLastChange >= this._bgInterval) {
         const next = (this.data.bgIndex + 1) % this.data.bgImages.length
