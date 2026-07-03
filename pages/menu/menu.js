@@ -1769,14 +1769,16 @@ Page({
       that._tickWaveBars(ct)
     })
 
-    // ⭐ onPlay：备用确认
+    // ⭐ onPlay：每次都同步 playing 状态（修复"暂停键反复点"bug——之前用 _audioConfirmed 闸门吞掉了后续恢复播放事件，导致 UI 状态卡死）
     bgAudio.onPlay(() => {
-      if (that._audioConfirmed) return
-      that._audioConfirmed = true
-      console.log('[Audio] 播放已确认（onPlay）')
+      if (!that._audioConfirmed) {
+        that._audioConfirmed = true
+        console.log('[Audio] 播放已确认（onPlay）')
+        that._clearAudioTimers()
+      }
+      // 每次 onPlay 都必须同步状态，不能 return
       that.setData({ playing: true, loadingSong: false })
       app.globalData.player.playing = true
-      that._clearAudioTimers()
     })
 
     // ⭐ onError：远端 URL 失败 → stream=1 代理流 → 下载兜底
@@ -1961,7 +1963,12 @@ Page({
       if (this.data.playSong?.url) { this.setData({ loadingSong: true }); this._createAudio(this.data.playSong.url) }
       return
     }
-    this.data.playing ? this._audio.pause() : this._audio.play()
+    // ⭐ 用 _audio.paused 真实状态做判断（不依赖 data.playing，避免事件未到时的状态错乱）
+    if (this._audio.paused) {
+      this._audio.play()
+    } else {
+      this._audio.pause()
+    }
   },
 
   onShuffle() {
