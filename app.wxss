@@ -2131,9 +2131,9 @@ page {
   background: rgba(0,0,0,0.06);
 }
 .ipod-wheel-btn.top    { top: 8%;  left: 50%; transform: translateX(-50%); }
-.ipod-wheel-btn.bottom { bottom: 8%; left: 50%; transform: translateX(-50%); font-size: 17rpx; letter-spacing: 0; }
-.ipod-wheel-btn.left   { left: 8%;  top: 50%; transform: translateY(-50%); }
-.ipod-wheel-btn.right  { right: 8%; top: 50%; transform: translateY(-50%); }
+.ipod-wheel-btn.bottom { bottom: 4%; left: 50%; transform: translateX(-50%); font-size: 17rpx; letter-spacing: 0; }
+.ipod-wheel-btn.left   { left: 4%;  top: 50%; transform: translateY(-50%); }
+.ipod-wheel-btn.right  { right: 4%; top: 50%; transform: translateY(-50%); }
 .ipod-wheel-btn.left:active  { transform: translateY(-50%) scale(0.92); }
 .ipod-wheel-btn.right:active { transform: translateY(-50%) scale(0.92); }
 .ipod-wheel-btn.bottom:active{ transform: translateX(-50%) scale(0.92); }
