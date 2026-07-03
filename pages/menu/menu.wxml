@@ -46,14 +46,15 @@
     return 'center center'
   }
   // 浮窗歌词：根据与当前行的距离返回透明度等级 class
-  // dist == 0 → 'cur'（当前高亮），|dist| <= 1 → 'near'，|dist| <= 3 → 'mid'，其余 → 'far'
+  // dist == 0 → 'cur'（当前高亮），|dist| <= 2 → 'near'，|dist| <= 6 → 'mid'，其余 → 'far'
+  // 范围调大：让更多句子保持可见，只在接近屏幕边缘才淡出
   function lyricDist(idx, active) {
     if (active === undefined || active === null) return 'far'
     var d = idx - active
     var abs = d >= 0 ? d : -d
     if (abs === 0) return 'cur'
-    if (abs === 1) return 'near'
-    if (abs <= 3) return 'mid'
+    if (abs <= 2) return 'near'
+    if (abs <= 6) return 'mid'
     return 'far'
   }
   module.exports = { isFav: isFav, cfAngle: cfAngle, cfScale: cfScale, cfZ: cfZ, cfVisible: cfVisible, cfOrigin: cfOrigin, lyricDist: lyricDist }
