@@ -1285,6 +1285,27 @@ page {
   position: relative;
   margin-bottom: 6rpx;
 }
+/* 扩大触摸区域到上下 20rpx，方便手指拖动 */
+.ipod-player-progress-bar::before {
+  content: '';
+  position: absolute;
+  top: -18rpx;
+  bottom: -18rpx;
+  left: 0;
+  right: 0;
+}
+.ipod-player-progress-bar.seeking .fill {
+  transition: none;
+  box-shadow: 0 0 12rpx rgba(178,140,248,0.40);
+}
+.ipod-player-progress-bar.seeking .dot {
+  width: 18rpx;
+  height: 18rpx;
+  top: -7rpx;
+  box-shadow:
+    0 2rpx 8rpx rgba(154,128,196,0.40),
+    0 0 14rpx rgba(178,140,248,0.40);
+}
 .ipod-player-progress-bar .fill {
   height: 100%;
   background: linear-gradient(90deg, rgba(178,140,248,0.95) 0%, rgba(200,130,220,0.88) 30%, rgba(235,115,185,0.82) 55%, rgba(255,108,172,0.78) 75%, rgba(155,160,230,0.74) 88%, rgba(88,200,245,0.72) 100%);
@@ -2894,6 +2915,23 @@ page {
   background: rgba(255,255,255,0.10);
   border-radius: 2rpx;
   overflow: visible;
+}
+/* 扩大触摸区域 */
+.full-lyric-progress-bar::before {
+  content: '';
+  position: absolute;
+  top: -18rpx;
+  bottom: -18rpx;
+  left: 0;
+  right: 0;
+}
+.full-lyric-progress-bar.seeking .full-lyric-progress-fill {
+  transition: none;
+}
+.full-lyric-progress-bar.seeking .full-lyric-progress-dot {
+  width: 22rpx;
+  height: 22rpx;
+  box-shadow: 0 0 20rpx var(--tc, rgba(255,80,180,0.60)), 0 0 8rpx var(--tc-bright, rgba(150,80,255,0.40));
 }
 .full-lyric-progress-fill {
   height: 100%;

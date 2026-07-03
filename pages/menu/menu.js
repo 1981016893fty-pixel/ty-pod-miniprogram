@@ -58,6 +58,9 @@ Page({
     currentTimeFmt:    '00:00',
     durationFmt:       '00:00',
     loadingSong:       false,
+    seeking:           false,       // 正在拖动进度条
+    seekingProgress:   0,           // 拖动时的临时进度 (0-100)
+    seekingTimeFmt:    '00:00',     // 拖动时的临时时间显示
     lyrics:            [],
     lyricActiveIdx:    0,
     lyricScrollTarget: 0,
@@ -584,6 +587,57 @@ Page({
     this.setData({ miniBarEntering: false })
     this._pushView('nowplaying')
     this.setData({ viewTitle: 'Now Playing' })
+  },
+
+  /* ============ 进度条拖动 ============ */
+  onProgressTouchStart(e) {
+    if (!this._audio || !this.data.duration || this.data.duration <= 0) return
+    this._seeking = true
+    // 查询进度条元素的位置
+    const query = wx.createSelectorQuery().in(this)
+    const barClass = e.currentTarget.dataset.bar || 'ipod-player-progress-bar'
+    query.select('.' + barClass).boundingClientRect()
+    query.exec((res) => {
+      if (res && res[0]) {
+        this._progressBarRect = res[0]
+        this._updateSeekingFromTouch(e)
+      }
+    })
+  },
+  onProgressTouchMove(e) {
+    if (!this._seeking) return
+    this._updateSeekingFromTouch(e)
+  },
+  onProgressTouchEnd(e) {
+    if (!this._seeking) return
+    const progress = this.data.seekingProgress
+    const targetTime = progress / 100 * this.data.duration
+    this._seeking = false
+    this._progressBarRect = null
+    this.setData({ seeking: false })
+    if (this._audio && this.data.duration > 0) {
+      this._audio.seek(targetTime)
+      // 立即更新当前时间，避免 seek 延迟期间的视觉跳回
+      this.setData({
+        currentTime: targetTime,
+        currentTimeFmt: this._fmtSec(targetTime),
+      })
+      app.globalData.player.currentTime = targetTime
+    }
+  },
+  _updateSeekingFromTouch(e) {
+    if (!this._progressBarRect) return
+    const touch = e.touches[0] || e.changedTouches[0]
+    if (!touch) return
+    const rect = this._progressBarRect
+    const x = touch.clientX - rect.left
+    let progress = Math.max(0, Math.min(100, x / rect.width * 100))
+    const seekTime = progress / 100 * this.data.duration
+    this.setData({
+      seeking: true,
+      seekingProgress: progress,
+      seekingTimeFmt: this._fmtSec(seekTime),
+    })
   },
 
   _pushView(view) {
@@ -1788,6 +1842,14 @@ Page({
       }
       const ct = bgAudio.currentTime
       const d = bgAudio.duration || 0
+      // 拖动进度条时不覆盖进度，只更新 duration（onTimeUpdate 可能拿到更准确的 duration）
+      if (that._seeking) {
+        if (d > 0 && d !== that.data.duration) {
+          that.setData({ duration: d, durationFmt: that._fmtSec(d) })
+        }
+        app.globalData.player.currentTime = ct
+        return
+      }
       that.setData({
         currentTime: ct,
         currentTimeFmt: that._fmtSec(ct),

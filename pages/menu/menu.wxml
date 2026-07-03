@@ -298,12 +298,16 @@
 
           <!-- 进度条 -->
           <view class="ipod-player-progress" wx:if="{{!loadingSong}}">
-            <view class="ipod-player-progress-bar">
-              <view class="fill" style="width:{{duration > 0 ? currentTime/duration*100 : 0}}%"></view>
-              <view class="dot" style="left:{{duration > 0 ? currentTime/duration*100 : 0}}%"></view>
+            <view class="ipod-player-progress-bar {{seeking ? 'seeking' : ''}}"
+              data-bar="ipod-player-progress-bar"
+              bindtouchstart="onProgressTouchStart"
+              bindtouchmove="onProgressTouchMove"
+              bindtouchend="onProgressTouchEnd">
+              <view class="fill" style="width:{{seeking ? seekingProgress : (duration > 0 ? currentTime/duration*100 : 0)}}%"></view>
+              <view class="dot" style="left:{{seeking ? seekingProgress : (duration > 0 ? currentTime/duration*100 : 0)}}%"></view>
             </view>
             <view class="ipod-player-time">
-              <text>{{currentTimeFmt}}</text>
+              <text>{{seeking ? seekingTimeFmt : currentTimeFmt}}</text>
               <text>{{durationFmt}}</text>
             </view>
           </view>
@@ -609,12 +613,16 @@
         </view>
         <!-- 中间进度条 -->
         <view class="full-lyric-progress-wrap">
-          <view class="full-lyric-progress-bar">
-            <view class="full-lyric-progress-fill" style="width:{{duration > 0 ? currentTime/duration*100 : 0}}%"></view>
-            <view class="full-lyric-progress-dot" style="left:{{duration > 0 ? currentTime/duration*100 : 0}}%"></view>
+          <view class="full-lyric-progress-bar {{seeking ? 'seeking' : ''}}"
+            data-bar="full-lyric-progress-bar"
+            bindtouchstart="onProgressTouchStart"
+            bindtouchmove="onProgressTouchMove"
+            bindtouchend="onProgressTouchEnd">
+            <view class="full-lyric-progress-fill" style="width:{{seeking ? seekingProgress : (duration > 0 ? currentTime/duration*100 : 0)}}%"></view>
+            <view class="full-lyric-progress-dot" style="left:{{seeking ? seekingProgress : (duration > 0 ? currentTime/duration*100 : 0)}}%"></view>
           </view>
           <view class="full-lyric-time">
-            <text>{{currentTimeFmt}}</text>
+            <text>{{seeking ? seekingTimeFmt : currentTimeFmt}}</text>
             <text>{{durationFmt}}</text>
           </view>
         </view>
