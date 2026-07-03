@@ -558,12 +558,16 @@ Page({
     this._svH_menu = 0; this._svH_onlinemusic = 0; this._svH_search = 0
     this._svH_hot = 0; this._svH_localmusic = 0; this._svH_settings = 0; this._svH_albumsongs = 0
     clearTimeout(this._scrollBarTimer)
+    const poppedView = stack[stack.length - 1]
+    const clearSearch = poppedView !== 'search'
     this.setData({
       viewStack: stack,
-      currentView: stack[stack.length - 1],
-      viewTitle: VIEW_TITLES[stack[stack.length - 1]] ?? '',
+      currentView: poppedView,
+      viewTitle: VIEW_TITLES[poppedView] ?? '',
       menuIndex: 0, subMenuIndex: 0, settingsIndex: 0,
-      searchKeyword: '', searchResults: [], searchLoading: false,
+      // 从 Now Playing 返回到 search 时保留搜索结果；返回到其他页面则清空
+      ...(clearSearch ? { searchKeyword: '', searchResults: [] } : {}),
+      searchLoading: false,
       scrollBarVisible: false,
     })
     // 从 Now Playing 返回到非 Now Playing 页面时，触发屏幕内 mini 条入场动画
