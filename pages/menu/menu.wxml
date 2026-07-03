@@ -480,8 +480,8 @@
           </view>
         </scroll-view>
 
-        <!-- 底部 Mini 播放条 —— 屏幕内，可点击进入 Now Playing -->
-        <view wx:if="{{currentView !== 'nowplaying' && currentSong && currentSong.name}}"
+        <!-- 底部 Mini 播放条 —— 屏幕内，可点击进入 Now Playing（coverflow 和 nowplaying 不显示） -->
+        <view wx:if="{{currentView !== 'nowplaying' && currentView !== 'coverflow' && currentSong && currentSong.name}}"
           class="mini-bar {{miniBarEntering ? 'mini-bar-enter' : ''}}"
           catchtap="onOpenNowPlaying"
           hover-class="mini-bar-hover"

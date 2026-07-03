@@ -2328,7 +2328,7 @@ Page({
       ? (primaryArtist + ' ' + album.name)
       : (album.name || primaryArtist || '')
 
-    const searchUrl = BASE + '/api/music/search?keywords=' + encodeURIComponent(query) + '&limit=50'
+    const searchUrl = BASE + '/api/music/search?keywords=' + encodeURIComponent(query) + '&limit=100'
     console.log('[Album] Searching:', searchUrl)
 
     wx.request({
@@ -2340,21 +2340,23 @@ Page({
           const songs = res.data.songs
 
           // 策略1：按 picId 过滤（同一专辑的歌曲 picId 相同）
+          // 注意：搜索 API 返回 pic_id（下划线格式），_norm 里才转成 picId
           const firstSong = album.songs && album.songs[0]
-          const targetPicId = (firstSong && firstSong.picId) || album.albumId || ''
+          const targetPicId = (firstSong && firstSong.picId) || album.picId || album.albumId || ''
           let filtered = []
           if (targetPicId) {
             filtered = songs.filter(function(s) {
-              return String(s.picId || '') === String(targetPicId)
+              return String(s.pic_id || s.picId || '') === String(targetPicId)
             })
           }
 
-          // 策略2：按专辑名精确匹配
+          // 策略2：按专辑名精确匹配（原始数据 album 可能是 al.name）
           if (filtered.length < 2) {
             const targetAlbum = (album.name || '').toLowerCase().trim()
             if (targetAlbum) {
               filtered = songs.filter(function(s) {
-                return (s.album || '').toLowerCase().trim() === targetAlbum
+                const rawAlbum = (s.album || (s.al && s.al.name) || '').toLowerCase().trim()
+                return rawAlbum === targetAlbum
               })
             }
           }
